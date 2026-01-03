@@ -1,0 +1,17 @@
+{
+  "id": "chapter1/Chapt1Exercise8/Chapt1Exercise8_matlab",
+  "title": "Chapter 1 - Exercise 8 - MATLAB",
+  "description": "<a href=\"/programs/matlab/Chapt1Exercise8/Chapt1Exercise8.m\" download=\"Chapt1Exercise8.m\"",
+  "source": "@site/docs/chapter1/Chapt1Exercise8/Chapt1Exercise8_matlab.mdx",
+  "sourceDirName": "chapter1/Chapt1Exercise8",
+  "slug": "/chapter1/Chapt1Exercise8/Chapt1Exercise8_matlab",
+  "permalink": "/docs/chapter1/Chapt1Exercise8/Chapt1Exercise8_matlab",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 1 - Exercise 8 - MATLAB",
+    "sidebar_label": "MATLAB Code"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "id": "chapter6/Chapt6Exercise4d/Chapt6Exercise4d_matlab",
+  "title": "Chapter 6 - Exercise 4D - MATLAB",
+  "description": "<a href=\"/programs/matlab/Chapt6Exercise4d/Chapt6Exercise4d.m\" download=\"Chapt6Exercise4d.m\"",
+  "source": "@site/docs/chapter6/Chapt6Exercise4d/Chapt6Exercise4d_matlab.mdx",
+  "sourceDirName": "chapter6/Chapt6Exercise4d",
+  "slug": "/chapter6/Chapt6Exercise4d/Chapt6Exercise4d_matlab",
+  "permalink": "/docs/chapter6/Chapt6Exercise4d/Chapt6Exercise4d_matlab",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 6 - Exercise 4D - MATLAB",
+    "sidebar_label": "MATLAB Code"
+  }
+}

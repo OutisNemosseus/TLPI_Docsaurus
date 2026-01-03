@@ -1,0 +1,26 @@
+{
+  "id": "chapter2/Chapt2Fig24/index",
+  "title": "Chapter 2 - Fig 24",
+  "description": "Chapter 2: Schrödinger Equation",
+  "source": "@site/docs/chapter2/Chapt2Fig24/index.mdx",
+  "sourceDirName": "chapter2/Chapt2Fig24",
+  "slug": "/chapter2/Chapt2Fig24/",
+  "permalink": "/docs/chapter2/Chapt2Fig24/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 2 - Fig 24",
+    "sidebar_label": "Chapter 2 - Fig 24"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 2 - Fig 2",
+    "permalink": "/docs/chapter2/Chapt2Fig2/"
+  },
+  "next": {
+    "title": "Chapter 2 - Fig 3A",
+    "permalink": "/docs/chapter2/Chapt2Fig3a/"
+  }
+}

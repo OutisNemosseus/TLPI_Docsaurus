@@ -1,0 +1,17 @@
+{
+  "id": "chapter2/Chapt2Fig24/Chapt2Fig24_matlab",
+  "title": "Chapter 2 - Fig 24 - MATLAB",
+  "description": "<a href=\"/programs/matlab/Chapt2Fig24/Chapt2Fig24.m\" download=\"Chapt2Fig24.m\"",
+  "source": "@site/docs/chapter2/Chapt2Fig24/Chapt2Fig24_matlab.mdx",
+  "sourceDirName": "chapter2/Chapt2Fig24",
+  "slug": "/chapter2/Chapt2Fig24/Chapt2Fig24_matlab",
+  "permalink": "/docs/chapter2/Chapt2Fig24/Chapt2Fig24_matlab",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 2 - Fig 24 - MATLAB",
+    "sidebar_label": "MATLAB Code"
+  }
+}

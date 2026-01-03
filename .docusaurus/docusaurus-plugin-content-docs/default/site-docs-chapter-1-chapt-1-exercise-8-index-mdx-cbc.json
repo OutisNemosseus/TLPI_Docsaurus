@@ -1,0 +1,26 @@
+{
+  "id": "chapter1/Chapt1Exercise8/index",
+  "title": "Chapter 1 - Exercise 8",
+  "description": "Chapter 1: Introduction to Quantum Mechanics",
+  "source": "@site/docs/chapter1/Chapt1Exercise8/index.mdx",
+  "sourceDirName": "chapter1/Chapt1Exercise8",
+  "slug": "/chapter1/Chapt1Exercise8/",
+  "permalink": "/docs/chapter1/Chapt1Exercise8/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 1 - Exercise 8",
+    "sidebar_label": "Chapter 1 - Exercise 8"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "📖 Introduction",
+    "permalink": "/docs/intro"
+  },
+  "next": {
+    "title": "Chapter 1 - Fig 10",
+    "permalink": "/docs/chapter1/Chapt1Fig10/"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "id": "chapter8/Chapt8Fig15/Chapt8Fig15_matlab",
+  "title": "Chapter 8 - Fig 15 - MATLAB",
+  "description": "<a href=\"/programs/matlab/Chapt8Fig15/Chapt8Fig15.m\" download=\"Chapt8Fig15.m\"",
+  "source": "@site/docs/chapter8/Chapt8Fig15/Chapt8Fig15_matlab.mdx",
+  "sourceDirName": "chapter8/Chapt8Fig15",
+  "slug": "/chapter8/Chapt8Fig15/Chapt8Fig15_matlab",
+  "permalink": "/docs/chapter8/Chapt8Fig15/Chapt8Fig15_matlab",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 8 - Fig 15 - MATLAB",
+    "sidebar_label": "MATLAB Code"
+  }
+}

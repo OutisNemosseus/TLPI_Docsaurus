@@ -1,0 +1,26 @@
+{
+  "id": "chapter3/Chapt3Fig14/index",
+  "title": "Chapter 3 - Fig 14",
+  "description": "Chapter 3: Quantum Wells and Barriers",
+  "source": "@site/docs/chapter3/Chapt3Fig14/index.mdx",
+  "sourceDirName": "chapter3/Chapt3Fig14",
+  "slug": "/chapter3/Chapt3Fig14/",
+  "permalink": "/docs/chapter3/Chapt3Fig14/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 3 - Fig 14",
+    "sidebar_label": "Chapter 3 - Fig 14"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 3 - Exercise 7",
+    "permalink": "/docs/chapter3/Chapt3Exercise7/"
+  },
+  "next": {
+    "title": "Chapter 4 - Exercise 2A",
+    "permalink": "/docs/chapter4/Chapt4Exercise2a/"
+  }
+}

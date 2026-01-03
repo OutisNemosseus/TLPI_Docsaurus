@@ -1,0 +1,17 @@
+{
+  "id": "chapter8/Chapt8Fig14b/Chapt8Fig14b_matlab",
+  "title": "Chapter 8 - Fig 14B - MATLAB",
+  "description": "<a href=\"/programs/matlab/Chapt8Fig14b/Chapt8Fig14b.m\" download=\"Chapt8Fig14b.m\"",
+  "source": "@site/docs/chapter8/Chapt8Fig14b/Chapt8Fig14b_matlab.mdx",
+  "sourceDirName": "chapter8/Chapt8Fig14b",
+  "slug": "/chapter8/Chapt8Fig14b/Chapt8Fig14b_matlab",
+  "permalink": "/docs/chapter8/Chapt8Fig14b/Chapt8Fig14b_matlab",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 8 - Fig 14B - MATLAB",
+    "sidebar_label": "MATLAB Code"
+  }
+}

@@ -1,0 +1,478 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "path": "/docs",
+      "versions": [
+        {
+          "name": "current",
+          "label": "Next",
+          "isLast": true,
+          "path": "/docs",
+          "mainDocId": "intro",
+          "docs": [
+            {
+              "id": "architecture/index",
+              "path": "/docs/architecture/"
+            },
+            {
+              "id": "chapter1/Chapt1Exercise8/Chapt1Exercise8_matlab",
+              "path": "/docs/chapter1/Chapt1Exercise8/Chapt1Exercise8_matlab"
+            },
+            {
+              "id": "chapter1/Chapt1Exercise8/index",
+              "path": "/docs/chapter1/Chapt1Exercise8/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter1/Chapt1Fig10/Chapt1Fig10_matlab",
+              "path": "/docs/chapter1/Chapt1Fig10/Chapt1Fig10_matlab"
+            },
+            {
+              "id": "chapter1/Chapt1Fig10/index",
+              "path": "/docs/chapter1/Chapt1Fig10/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter1/Chapt1Fig8/Chapt1Fig8_matlab",
+              "path": "/docs/chapter1/Chapt1Fig8/Chapt1Fig8_matlab"
+            },
+            {
+              "id": "chapter1/Chapt1Fig8/index",
+              "path": "/docs/chapter1/Chapt1Fig8/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter2/Chapt2Fig2/Chapt2Fig2_matlab",
+              "path": "/docs/chapter2/Chapt2Fig2/Chapt2Fig2_matlab"
+            },
+            {
+              "id": "chapter2/Chapt2Fig2/index",
+              "path": "/docs/chapter2/Chapt2Fig2/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter2/Chapt2Fig24/Chapt2Fig24_matlab",
+              "path": "/docs/chapter2/Chapt2Fig24/Chapt2Fig24_matlab"
+            },
+            {
+              "id": "chapter2/Chapt2Fig24/index",
+              "path": "/docs/chapter2/Chapt2Fig24/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter2/Chapt2Fig3a/Chapt2Fig3a_matlab",
+              "path": "/docs/chapter2/Chapt2Fig3a/Chapt2Fig3a_matlab"
+            },
+            {
+              "id": "chapter2/Chapt2Fig3a/index",
+              "path": "/docs/chapter2/Chapt2Fig3a/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter2/Chapt2Fig3b/Chapt2Fig3b_matlab",
+              "path": "/docs/chapter2/Chapt2Fig3b/Chapt2Fig3b_matlab"
+            },
+            {
+              "id": "chapter2/Chapt2Fig3b/index",
+              "path": "/docs/chapter2/Chapt2Fig3b/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter2/Chapt2Fig4/Chapt2Fig4_matlab",
+              "path": "/docs/chapter2/Chapt2Fig4/Chapt2Fig4_matlab"
+            },
+            {
+              "id": "chapter2/Chapt2Fig4/index",
+              "path": "/docs/chapter2/Chapt2Fig4/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter3/Chapt3Exercise7/Chapt3Exercise7_matlab",
+              "path": "/docs/chapter3/Chapt3Exercise7/Chapt3Exercise7_matlab"
+            },
+            {
+              "id": "chapter3/Chapt3Exercise7/index",
+              "path": "/docs/chapter3/Chapt3Exercise7/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter3/Chapt3Fig14/Chapt3Fig14_matlab",
+              "path": "/docs/chapter3/Chapt3Fig14/Chapt3Fig14_matlab"
+            },
+            {
+              "id": "chapter3/Chapt3Fig14/index",
+              "path": "/docs/chapter3/Chapt3Fig14/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise2a/Chapt4Exercise2a_matlab",
+              "path": "/docs/chapter4/Chapt4Exercise2a/Chapt4Exercise2a_matlab"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise2a/index",
+              "path": "/docs/chapter4/Chapt4Exercise2a/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise2b/Chapt4Exercise2b_matlab",
+              "path": "/docs/chapter4/Chapt4Exercise2b/Chapt4Exercise2b_matlab"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise2b/index",
+              "path": "/docs/chapter4/Chapt4Exercise2b/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise3a/Chapt4Exercise3a_matlab",
+              "path": "/docs/chapter4/Chapt4Exercise3a/Chapt4Exercise3a_matlab"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise3a/index",
+              "path": "/docs/chapter4/Chapt4Exercise3a/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise3b/Chapt4Exercise3b_matlab",
+              "path": "/docs/chapter4/Chapt4Exercise3b/Chapt4Exercise3b_matlab"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise3b/index",
+              "path": "/docs/chapter4/Chapt4Exercise3b/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise4a/Chapt4Exercise4a_matlab",
+              "path": "/docs/chapter4/Chapt4Exercise4a/Chapt4Exercise4a_matlab"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise4a/index",
+              "path": "/docs/chapter4/Chapt4Exercise4a/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise4b1/Chapt4Exercise4b1_matlab",
+              "path": "/docs/chapter4/Chapt4Exercise4b1/Chapt4Exercise4b1_matlab"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise4b1/index",
+              "path": "/docs/chapter4/Chapt4Exercise4b1/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise4b2/Chapt4Exercise4b2_matlab",
+              "path": "/docs/chapter4/Chapt4Exercise4b2/Chapt4Exercise4b2_matlab"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise4b2/index",
+              "path": "/docs/chapter4/Chapt4Exercise4b2/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise4b3/Chapt4Exercise4b3_matlab",
+              "path": "/docs/chapter4/Chapt4Exercise4b3/Chapt4Exercise4b3_matlab"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise4b3/index",
+              "path": "/docs/chapter4/Chapt4Exercise4b3/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise5/Chapt4Exercise5_matlab",
+              "path": "/docs/chapter4/Chapt4Exercise5/Chapt4Exercise5_matlab"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise5/index",
+              "path": "/docs/chapter4/Chapt4Exercise5/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise7a/Chapt4Exercise7a_matlab",
+              "path": "/docs/chapter4/Chapt4Exercise7a/Chapt4Exercise7a_matlab"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise7a/index",
+              "path": "/docs/chapter4/Chapt4Exercise7a/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise7b/Chapt4Exercise7b_matlab",
+              "path": "/docs/chapter4/Chapt4Exercise7b/Chapt4Exercise7b_matlab"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise7b/index",
+              "path": "/docs/chapter4/Chapt4Exercise7b/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise8/Chapt4Exercise8_matlab",
+              "path": "/docs/chapter4/Chapt4Exercise8/Chapt4Exercise8_matlab"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise8/index",
+              "path": "/docs/chapter4/Chapt4Exercise8/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise9/Chapt4Exercise9_matlab",
+              "path": "/docs/chapter4/Chapt4Exercise9/Chapt4Exercise9_matlab"
+            },
+            {
+              "id": "chapter4/Chapt4Exercise9/index",
+              "path": "/docs/chapter4/Chapt4Exercise9/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter5/Chapt5Exercise5/Chapt5Exercise5_matlab",
+              "path": "/docs/chapter5/Chapt5Exercise5/Chapt5Exercise5_matlab"
+            },
+            {
+              "id": "chapter5/Chapt5Exercise5/index",
+              "path": "/docs/chapter5/Chapt5Exercise5/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter6/Chapt6Exercise10/Chapt6Exercise10_matlab",
+              "path": "/docs/chapter6/Chapt6Exercise10/Chapt6Exercise10_matlab"
+            },
+            {
+              "id": "chapter6/Chapt6Exercise10/index",
+              "path": "/docs/chapter6/Chapt6Exercise10/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter6/Chapt6Exercise4c/Chapt6Exercise4c_matlab",
+              "path": "/docs/chapter6/Chapt6Exercise4c/Chapt6Exercise4c_matlab"
+            },
+            {
+              "id": "chapter6/Chapt6Exercise4c/index",
+              "path": "/docs/chapter6/Chapt6Exercise4c/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter6/Chapt6Exercise4d/Chapt6Exercise4d_matlab",
+              "path": "/docs/chapter6/Chapt6Exercise4d/Chapt6Exercise4d_matlab"
+            },
+            {
+              "id": "chapter6/Chapt6Exercise4d/index",
+              "path": "/docs/chapter6/Chapt6Exercise4d/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter7/Chapt7Exercise3/Chapt7Exercise3_matlab",
+              "path": "/docs/chapter7/Chapt7Exercise3/Chapt7Exercise3_matlab"
+            },
+            {
+              "id": "chapter7/Chapt7Exercise3/index",
+              "path": "/docs/chapter7/Chapt7Exercise3/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter7/Chapt7Fig3/Chapt7Fig3_matlab",
+              "path": "/docs/chapter7/Chapt7Fig3/Chapt7Fig3_matlab"
+            },
+            {
+              "id": "chapter7/Chapt7Fig3/index",
+              "path": "/docs/chapter7/Chapt7Fig3/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter7/Chapt7Fig4a/Chapt7Fig4a_matlab",
+              "path": "/docs/chapter7/Chapt7Fig4a/Chapt7Fig4a_matlab"
+            },
+            {
+              "id": "chapter7/Chapt7Fig4a/index",
+              "path": "/docs/chapter7/Chapt7Fig4a/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter7/Chapt7Fig4b/Chapt7Fig4b_matlab",
+              "path": "/docs/chapter7/Chapt7Fig4b/Chapt7Fig4b_matlab"
+            },
+            {
+              "id": "chapter7/Chapt7Fig4b/index",
+              "path": "/docs/chapter7/Chapt7Fig4b/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter7/Chapt7Fig5a/Chapt7Fig5a_matlab",
+              "path": "/docs/chapter7/Chapt7Fig5a/Chapt7Fig5a_matlab"
+            },
+            {
+              "id": "chapter7/Chapt7Fig5a/index",
+              "path": "/docs/chapter7/Chapt7Fig5a/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter7/Chapt7Fig5b/Chapt7Fig5b_matlab",
+              "path": "/docs/chapter7/Chapt7Fig5b/Chapt7Fig5b_matlab"
+            },
+            {
+              "id": "chapter7/Chapt7Fig5b/index",
+              "path": "/docs/chapter7/Chapt7Fig5b/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter7/Chapt7Fig6a/Chapt7Fig6a_matlab",
+              "path": "/docs/chapter7/Chapt7Fig6a/Chapt7Fig6a_matlab"
+            },
+            {
+              "id": "chapter7/Chapt7Fig6a/index",
+              "path": "/docs/chapter7/Chapt7Fig6a/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter7/Chapt7Fig6b/Chapt7Fig6b_matlab",
+              "path": "/docs/chapter7/Chapt7Fig6b/Chapt7Fig6b_matlab"
+            },
+            {
+              "id": "chapter7/Chapt7Fig6b/index",
+              "path": "/docs/chapter7/Chapt7Fig6b/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter8/Chapt8Exercise1b/Chapt8Exercise1b_matlab",
+              "path": "/docs/chapter8/Chapt8Exercise1b/Chapt8Exercise1b_matlab"
+            },
+            {
+              "id": "chapter8/Chapt8Exercise1b/index",
+              "path": "/docs/chapter8/Chapt8Exercise1b/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter8/Chapt8Exercise7a/Chapt8Exercise7a_matlab",
+              "path": "/docs/chapter8/Chapt8Exercise7a/Chapt8Exercise7a_matlab"
+            },
+            {
+              "id": "chapter8/Chapt8Exercise7a/index",
+              "path": "/docs/chapter8/Chapt8Exercise7a/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter8/Chapt8Exercise7b/Chapt8Exercise7b_matlab",
+              "path": "/docs/chapter8/Chapt8Exercise7b/Chapt8Exercise7b_matlab"
+            },
+            {
+              "id": "chapter8/Chapt8Exercise7b/index",
+              "path": "/docs/chapter8/Chapt8Exercise7b/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter8/Chapt8Fig14a/Chapt8Fig14a_matlab",
+              "path": "/docs/chapter8/Chapt8Fig14a/Chapt8Fig14a_matlab"
+            },
+            {
+              "id": "chapter8/Chapt8Fig14a/index",
+              "path": "/docs/chapter8/Chapt8Fig14a/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter8/Chapt8Fig14b/Chapt8Fig14b_matlab",
+              "path": "/docs/chapter8/Chapt8Fig14b/Chapt8Fig14b_matlab"
+            },
+            {
+              "id": "chapter8/Chapt8Fig14b/index",
+              "path": "/docs/chapter8/Chapt8Fig14b/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter8/Chapt8Fig15/Chapt8Fig15_matlab",
+              "path": "/docs/chapter8/Chapt8Fig15/Chapt8Fig15_matlab"
+            },
+            {
+              "id": "chapter8/Chapt8Fig15/index",
+              "path": "/docs/chapter8/Chapt8Fig15/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter9/Chapt9Exercise1/Chapt9Exercise1_matlab",
+              "path": "/docs/chapter9/Chapt9Exercise1/Chapt9Exercise1_matlab"
+            },
+            {
+              "id": "chapter9/Chapt9Exercise1/index",
+              "path": "/docs/chapter9/Chapt9Exercise1/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter9/Chapt9Exercise2/Chapt9Exercise2_matlab",
+              "path": "/docs/chapter9/Chapt9Exercise2/Chapt9Exercise2_matlab"
+            },
+            {
+              "id": "chapter9/Chapt9Exercise2/index",
+              "path": "/docs/chapter9/Chapt9Exercise2/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter9/Chapt9Exercise3/Chapt9Exercise3_matlab",
+              "path": "/docs/chapter9/Chapt9Exercise3/Chapt9Exercise3_matlab"
+            },
+            {
+              "id": "chapter9/Chapt9Exercise3/index",
+              "path": "/docs/chapter9/Chapt9Exercise3/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter9/Chapt9Exercise4/Chapt9Exercise4_matlab",
+              "path": "/docs/chapter9/Chapt9Exercise4/Chapt9Exercise4_matlab"
+            },
+            {
+              "id": "chapter9/Chapt9Exercise4/index",
+              "path": "/docs/chapter9/Chapt9Exercise4/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter9/Chapt9Exercise5/Chapt9Exercise5_matlab",
+              "path": "/docs/chapter9/Chapt9Exercise5/Chapt9Exercise5_matlab"
+            },
+            {
+              "id": "chapter9/Chapt9Exercise5/index",
+              "path": "/docs/chapter9/Chapt9Exercise5/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter9/Chapt9Fig6a1/Chapt9Fig6a1_matlab",
+              "path": "/docs/chapter9/Chapt9Fig6a1/Chapt9Fig6a1_matlab"
+            },
+            {
+              "id": "chapter9/Chapt9Fig6a1/index",
+              "path": "/docs/chapter9/Chapt9Fig6a1/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter9/Chapt9Fig6a2/Chapt9Fig6a2_matlab",
+              "path": "/docs/chapter9/Chapt9Fig6a2/Chapt9Fig6a2_matlab"
+            },
+            {
+              "id": "chapter9/Chapt9Fig6a2/index",
+              "path": "/docs/chapter9/Chapt9Fig6a2/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "chapter9/Chapt9Fig6b/Chapt9Fig6b_matlab",
+              "path": "/docs/chapter9/Chapt9Fig6b/Chapt9Fig6b_matlab"
+            },
+            {
+              "id": "chapter9/Chapt9Fig6b/index",
+              "path": "/docs/chapter9/Chapt9Fig6b/",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "intro",
+              "path": "/docs/intro",
+              "sidebar": "tutorialSidebar"
+            }
+          ],
+          "draftIds": [],
+          "sidebars": {
+            "tutorialSidebar": {
+              "link": {
+                "path": "/docs/intro",
+                "label": "📖 Introduction"
+              }
+            }
+          }
+        }
+      ],
+      "breadcrumbs": true
+    }
+  }
+}

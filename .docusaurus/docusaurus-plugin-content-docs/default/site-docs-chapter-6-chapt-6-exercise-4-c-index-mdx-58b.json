@@ -1,0 +1,26 @@
+{
+  "id": "chapter6/Chapt6Exercise4c/index",
+  "title": "Chapter 6 - Exercise 4C",
+  "description": "Chapter 6: Density of States",
+  "source": "@site/docs/chapter6/Chapt6Exercise4c/index.mdx",
+  "sourceDirName": "chapter6/Chapt6Exercise4c",
+  "slug": "/chapter6/Chapt6Exercise4c/",
+  "permalink": "/docs/chapter6/Chapt6Exercise4c/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 6 - Exercise 4C",
+    "sidebar_label": "Chapter 6 - Exercise 4C"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 6 - Exercise 10",
+    "permalink": "/docs/chapter6/Chapt6Exercise10/"
+  },
+  "next": {
+    "title": "Chapter 6 - Exercise 4D",
+    "permalink": "/docs/chapter6/Chapt6Exercise4d/"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "id": "chapter1/Chapt1Fig8/index",
+  "title": "Chapter 1 - Fig 8",
+  "description": "Chapter 1: Introduction to Quantum Mechanics",
+  "source": "@site/docs/chapter1/Chapt1Fig8/index.mdx",
+  "sourceDirName": "chapter1/Chapt1Fig8",
+  "slug": "/chapter1/Chapt1Fig8/",
+  "permalink": "/docs/chapter1/Chapt1Fig8/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 1 - Fig 8",
+    "sidebar_label": "Chapter 1 - Fig 8"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 1 - Fig 10",
+    "permalink": "/docs/chapter1/Chapt1Fig10/"
+  },
+  "next": {
+    "title": "Chapter 2 - Fig 2",
+    "permalink": "/docs/chapter2/Chapt2Fig2/"
+  }
+}

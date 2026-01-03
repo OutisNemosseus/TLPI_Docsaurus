@@ -1,0 +1,17 @@
+{
+  "id": "chapter6/Chapt6Exercise4c/Chapt6Exercise4c_matlab",
+  "title": "Chapter 6 - Exercise 4C - MATLAB",
+  "description": "<a href=\"/programs/matlab/Chapt6Exercise4c/Chapt6Exercise4c.m\" download=\"Chapt6Exercise4c.m\"",
+  "source": "@site/docs/chapter6/Chapt6Exercise4c/Chapt6Exercise4c_matlab.mdx",
+  "sourceDirName": "chapter6/Chapt6Exercise4c",
+  "slug": "/chapter6/Chapt6Exercise4c/Chapt6Exercise4c_matlab",
+  "permalink": "/docs/chapter6/Chapt6Exercise4c/Chapt6Exercise4c_matlab",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 6 - Exercise 4C - MATLAB",
+    "sidebar_label": "MATLAB Code"
+  }
+}

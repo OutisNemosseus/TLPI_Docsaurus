@@ -1,0 +1,26 @@
+{
+  "id": "chapter4/Chapt4Exercise2a/index",
+  "title": "Chapter 4 - Exercise 2A",
+  "description": "Chapter 4: Harmonic Oscillator",
+  "source": "@site/docs/chapter4/Chapt4Exercise2a/index.mdx",
+  "sourceDirName": "chapter4/Chapt4Exercise2a",
+  "slug": "/chapter4/Chapt4Exercise2a/",
+  "permalink": "/docs/chapter4/Chapt4Exercise2a/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 4 - Exercise 2A",
+    "sidebar_label": "Chapter 4 - Exercise 2A"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 3 - Fig 14",
+    "permalink": "/docs/chapter3/Chapt3Fig14/"
+  },
+  "next": {
+    "title": "Chapter 4 - Exercise 2B",
+    "permalink": "/docs/chapter4/Chapt4Exercise2b/"
+  }
+}

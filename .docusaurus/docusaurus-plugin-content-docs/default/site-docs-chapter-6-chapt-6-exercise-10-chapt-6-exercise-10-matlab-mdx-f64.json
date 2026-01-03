@@ -1,0 +1,17 @@
+{
+  "id": "chapter6/Chapt6Exercise10/Chapt6Exercise10_matlab",
+  "title": "Chapter 6 - Exercise 10 - MATLAB",
+  "description": "<a href=\"/programs/matlab/Chapt6Exercise10/Chapt6Exercise10.m\" download=\"Chapt6Exercise10.m\"",
+  "source": "@site/docs/chapter6/Chapt6Exercise10/Chapt6Exercise10_matlab.mdx",
+  "sourceDirName": "chapter6/Chapt6Exercise10",
+  "slug": "/chapter6/Chapt6Exercise10/Chapt6Exercise10_matlab",
+  "permalink": "/docs/chapter6/Chapt6Exercise10/Chapt6Exercise10_matlab",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 6 - Exercise 10 - MATLAB",
+    "sidebar_label": "MATLAB Code"
+  }
+}

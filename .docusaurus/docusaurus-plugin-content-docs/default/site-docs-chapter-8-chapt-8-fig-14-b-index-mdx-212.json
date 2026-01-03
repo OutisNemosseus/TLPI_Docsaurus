@@ -1,0 +1,26 @@
+{
+  "id": "chapter8/Chapt8Fig14b/index",
+  "title": "Chapter 8 - Fig 14B",
+  "description": "Chapter 8: Perturbation Theory",
+  "source": "@site/docs/chapter8/Chapt8Fig14b/index.mdx",
+  "sourceDirName": "chapter8/Chapt8Fig14b",
+  "slug": "/chapter8/Chapt8Fig14b/",
+  "permalink": "/docs/chapter8/Chapt8Fig14b/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 8 - Fig 14B",
+    "sidebar_label": "Chapter 8 - Fig 14B"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 8 - Fig 14A",
+    "permalink": "/docs/chapter8/Chapt8Fig14a/"
+  },
+  "next": {
+    "title": "Chapter 8 - Fig 15",
+    "permalink": "/docs/chapter8/Chapt8Fig15/"
+  }
+}

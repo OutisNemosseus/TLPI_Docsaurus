@@ -1,0 +1,26 @@
+{
+  "id": "chapter4/Chapt4Exercise3b/index",
+  "title": "Chapter 4 - Exercise 3B",
+  "description": "Chapter 4: Harmonic Oscillator",
+  "source": "@site/docs/chapter4/Chapt4Exercise3b/index.mdx",
+  "sourceDirName": "chapter4/Chapt4Exercise3b",
+  "slug": "/chapter4/Chapt4Exercise3b/",
+  "permalink": "/docs/chapter4/Chapt4Exercise3b/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 4 - Exercise 3B",
+    "sidebar_label": "Chapter 4 - Exercise 3B"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 4 - Exercise 3A",
+    "permalink": "/docs/chapter4/Chapt4Exercise3a/"
+  },
+  "next": {
+    "title": "Chapter 4 - Exercise 4A",
+    "permalink": "/docs/chapter4/Chapt4Exercise4a/"
+  }
+}

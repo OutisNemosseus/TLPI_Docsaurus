@@ -1,0 +1,17 @@
+{
+  "id": "chapter2/Chapt2Fig3a/Chapt2Fig3a_matlab",
+  "title": "Chapter 2 - Fig 3A - MATLAB",
+  "description": "<a href=\"/programs/matlab/Chapt2Fig3a/Chapt2Fig3a.m\" download=\"Chapt2Fig3a.m\"",
+  "source": "@site/docs/chapter2/Chapt2Fig3a/Chapt2Fig3a_matlab.mdx",
+  "sourceDirName": "chapter2/Chapt2Fig3a",
+  "slug": "/chapter2/Chapt2Fig3a/Chapt2Fig3a_matlab",
+  "permalink": "/docs/chapter2/Chapt2Fig3a/Chapt2Fig3a_matlab",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 2 - Fig 3A - MATLAB",
+    "sidebar_label": "MATLAB Code"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "id": "chapter4/Chapt4Exercise5/Chapt4Exercise5_matlab",
+  "title": "Chapter 4 - Exercise 5 - MATLAB",
+  "description": "<a href=\"/programs/matlab/Chapt4Exercise5/Chapt4Exercise5.m\" download=\"Chapt4Exercise5.m\"",
+  "source": "@site/docs/chapter4/Chapt4Exercise5/Chapt4Exercise5_matlab.mdx",
+  "sourceDirName": "chapter4/Chapt4Exercise5",
+  "slug": "/chapter4/Chapt4Exercise5/Chapt4Exercise5_matlab",
+  "permalink": "/docs/chapter4/Chapt4Exercise5/Chapt4Exercise5_matlab",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 4 - Exercise 5 - MATLAB",
+    "sidebar_label": "MATLAB Code"
+  }
+}

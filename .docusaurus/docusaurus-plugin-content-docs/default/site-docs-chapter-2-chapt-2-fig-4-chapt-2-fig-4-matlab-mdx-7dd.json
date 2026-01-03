@@ -1,0 +1,17 @@
+{
+  "id": "chapter2/Chapt2Fig4/Chapt2Fig4_matlab",
+  "title": "Chapter 2 - Fig 4 - MATLAB",
+  "description": "<a href=\"/programs/matlab/Chapt2Fig4/Chapt2Fig4.m\" download=\"Chapt2Fig4.m\"",
+  "source": "@site/docs/chapter2/Chapt2Fig4/Chapt2Fig4_matlab.mdx",
+  "sourceDirName": "chapter2/Chapt2Fig4",
+  "slug": "/chapter2/Chapt2Fig4/Chapt2Fig4_matlab",
+  "permalink": "/docs/chapter2/Chapt2Fig4/Chapt2Fig4_matlab",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 2 - Fig 4 - MATLAB",
+    "sidebar_label": "MATLAB Code"
+  }
+}

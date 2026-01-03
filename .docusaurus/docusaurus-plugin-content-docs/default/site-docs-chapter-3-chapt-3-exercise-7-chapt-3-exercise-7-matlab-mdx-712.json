@@ -1,0 +1,17 @@
+{
+  "id": "chapter3/Chapt3Exercise7/Chapt3Exercise7_matlab",
+  "title": "Chapter 3 - Exercise 7 - MATLAB",
+  "description": "<a href=\"/programs/matlab/Chapt3Exercise7/Chapt3Exercise7.m\" download=\"Chapt3Exercise7.m\"",
+  "source": "@site/docs/chapter3/Chapt3Exercise7/Chapt3Exercise7_matlab.mdx",
+  "sourceDirName": "chapter3/Chapt3Exercise7",
+  "slug": "/chapter3/Chapt3Exercise7/Chapt3Exercise7_matlab",
+  "permalink": "/docs/chapter3/Chapt3Exercise7/Chapt3Exercise7_matlab",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 3 - Exercise 7 - MATLAB",
+    "sidebar_label": "MATLAB Code"
+  }
+}

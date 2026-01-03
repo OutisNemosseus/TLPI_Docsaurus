@@ -1,0 +1,17 @@
+{
+  "id": "chapter4/Chapt4Exercise2a/Chapt4Exercise2a_matlab",
+  "title": "Chapter 4 - Exercise 2A - MATLAB",
+  "description": "<a href=\"/programs/matlab/Chapt4Exercise2a/Chapt4Exercise2a.m\" download=\"Chapt4Exercise2a.m\"",
+  "source": "@site/docs/chapter4/Chapt4Exercise2a/Chapt4Exercise2a_matlab.mdx",
+  "sourceDirName": "chapter4/Chapt4Exercise2a",
+  "slug": "/chapter4/Chapt4Exercise2a/Chapt4Exercise2a_matlab",
+  "permalink": "/docs/chapter4/Chapt4Exercise2a/Chapt4Exercise2a_matlab",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 4 - Exercise 2A - MATLAB",
+    "sidebar_label": "MATLAB Code"
+  }
+}

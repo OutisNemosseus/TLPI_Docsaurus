@@ -1,0 +1,26 @@
+{
+  "id": "chapter2/Chapt2Fig3a/index",
+  "title": "Chapter 2 - Fig 3A",
+  "description": "Chapter 2: Schrödinger Equation",
+  "source": "@site/docs/chapter2/Chapt2Fig3a/index.mdx",
+  "sourceDirName": "chapter2/Chapt2Fig3a",
+  "slug": "/chapter2/Chapt2Fig3a/",
+  "permalink": "/docs/chapter2/Chapt2Fig3a/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 2 - Fig 3A",
+    "sidebar_label": "Chapter 2 - Fig 3A"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 2 - Fig 24",
+    "permalink": "/docs/chapter2/Chapt2Fig24/"
+  },
+  "next": {
+    "title": "Chapter 2 - Fig 3B",
+    "permalink": "/docs/chapter2/Chapt2Fig3b/"
+  }
+}

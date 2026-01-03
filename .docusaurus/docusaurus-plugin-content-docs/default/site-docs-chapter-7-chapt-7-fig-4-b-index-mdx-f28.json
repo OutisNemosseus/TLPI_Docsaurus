@@ -1,0 +1,26 @@
+{
+  "id": "chapter7/Chapt7Fig4b/index",
+  "title": "Chapter 7 - Fig 4B",
+  "description": "Chapter 7: Band Structure",
+  "source": "@site/docs/chapter7/Chapt7Fig4b/index.mdx",
+  "sourceDirName": "chapter7/Chapt7Fig4b",
+  "slug": "/chapter7/Chapt7Fig4b/",
+  "permalink": "/docs/chapter7/Chapt7Fig4b/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 7 - Fig 4B",
+    "sidebar_label": "Chapter 7 - Fig 4B"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 7 - Fig 4A",
+    "permalink": "/docs/chapter7/Chapt7Fig4a/"
+  },
+  "next": {
+    "title": "Chapter 7 - Fig 5A",
+    "permalink": "/docs/chapter7/Chapt7Fig5a/"
+  }
+}

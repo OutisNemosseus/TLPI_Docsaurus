@@ -1,0 +1,26 @@
+{
+  "id": "chapter7/Chapt7Fig6b/index",
+  "title": "Chapter 7 - Fig 6B",
+  "description": "Chapter 7: Band Structure",
+  "source": "@site/docs/chapter7/Chapt7Fig6b/index.mdx",
+  "sourceDirName": "chapter7/Chapt7Fig6b",
+  "slug": "/chapter7/Chapt7Fig6b/",
+  "permalink": "/docs/chapter7/Chapt7Fig6b/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 7 - Fig 6B",
+    "sidebar_label": "Chapter 7 - Fig 6B"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 7 - Fig 6A",
+    "permalink": "/docs/chapter7/Chapt7Fig6a/"
+  },
+  "next": {
+    "title": "Chapter 8 - Exercise 1B",
+    "permalink": "/docs/chapter8/Chapt8Exercise1b/"
+  }
+}

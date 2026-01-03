@@ -1,0 +1,22 @@
+{
+  "id": "chapter9/Chapt9Fig6b/index",
+  "title": "Chapter 9 - Fig 6B",
+  "description": "Chapter 9: Statistical Mechanics",
+  "source": "@site/docs/chapter9/Chapt9Fig6b/index.mdx",
+  "sourceDirName": "chapter9/Chapt9Fig6b",
+  "slug": "/chapter9/Chapt9Fig6b/",
+  "permalink": "/docs/chapter9/Chapt9Fig6b/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 9 - Fig 6B",
+    "sidebar_label": "Chapter 9 - Fig 6B"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 9 - Fig 6A2",
+    "permalink": "/docs/chapter9/Chapt9Fig6a2/"
+  }
+}

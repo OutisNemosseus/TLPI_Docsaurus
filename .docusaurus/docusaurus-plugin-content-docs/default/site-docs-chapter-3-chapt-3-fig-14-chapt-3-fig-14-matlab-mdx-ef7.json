@@ -1,0 +1,17 @@
+{
+  "id": "chapter3/Chapt3Fig14/Chapt3Fig14_matlab",
+  "title": "Chapter 3 - Fig 14 - MATLAB",
+  "description": "<a href=\"/programs/matlab/Chapt3Fig14/Chapt3Fig14.m\" download=\"Chapt3Fig14.m\"",
+  "source": "@site/docs/chapter3/Chapt3Fig14/Chapt3Fig14_matlab.mdx",
+  "sourceDirName": "chapter3/Chapt3Fig14",
+  "slug": "/chapter3/Chapt3Fig14/Chapt3Fig14_matlab",
+  "permalink": "/docs/chapter3/Chapt3Fig14/Chapt3Fig14_matlab",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 3 - Fig 14 - MATLAB",
+    "sidebar_label": "MATLAB Code"
+  }
+}

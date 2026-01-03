@@ -1,0 +1,422 @@
+{
+  "/docs-689": {
+    "__comp": "5e95c892",
+    "__context": {
+      "plugin": "aba21aa0"
+    }
+  },
+  "/docs-0d2": {
+    "__comp": "a7bd4aaa",
+    "__props": "0058b4c6"
+  },
+  "/docs-318": {
+    "__comp": "a94703ab"
+  },
+  "/docs/architecture/-4c1": {
+    "__comp": "17896441",
+    "content": "bb14d73a"
+  },
+  "/docs/chapter1/Chapt1Exercise8/-8ed": {
+    "__comp": "17896441",
+    "content": "cbc96e52"
+  },
+  "/docs/chapter1/Chapt1Exercise8/Chapt1Exercise8_matlab-634": {
+    "__comp": "17896441",
+    "content": "09ff6a78"
+  },
+  "/docs/chapter1/Chapt1Fig10/-ee3": {
+    "__comp": "17896441",
+    "content": "4ec10003"
+  },
+  "/docs/chapter1/Chapt1Fig10/Chapt1Fig10_matlab-88b": {
+    "__comp": "17896441",
+    "content": "a6de2205"
+  },
+  "/docs/chapter1/Chapt1Fig8/-4db": {
+    "__comp": "17896441",
+    "content": "f5f5446b"
+  },
+  "/docs/chapter1/Chapt1Fig8/Chapt1Fig8_matlab-51b": {
+    "__comp": "17896441",
+    "content": "00f851bc"
+  },
+  "/docs/chapter2/Chapt2Fig2/-67a": {
+    "__comp": "17896441",
+    "content": "964c1c71"
+  },
+  "/docs/chapter2/Chapt2Fig2/Chapt2Fig2_matlab-722": {
+    "__comp": "17896441",
+    "content": "6d257edf"
+  },
+  "/docs/chapter2/Chapt2Fig24/-10e": {
+    "__comp": "17896441",
+    "content": "acf671e0"
+  },
+  "/docs/chapter2/Chapt2Fig24/Chapt2Fig24_matlab-c2f": {
+    "__comp": "17896441",
+    "content": "96665314"
+  },
+  "/docs/chapter2/Chapt2Fig3a/-f3b": {
+    "__comp": "17896441",
+    "content": "91eb7356"
+  },
+  "/docs/chapter2/Chapt2Fig3a/Chapt2Fig3a_matlab-3c6": {
+    "__comp": "17896441",
+    "content": "d9b79bd9"
+  },
+  "/docs/chapter2/Chapt2Fig3b/-b2a": {
+    "__comp": "17896441",
+    "content": "1f35410b"
+  },
+  "/docs/chapter2/Chapt2Fig3b/Chapt2Fig3b_matlab-8ff": {
+    "__comp": "17896441",
+    "content": "c0c64538"
+  },
+  "/docs/chapter2/Chapt2Fig4/-c51": {
+    "__comp": "17896441",
+    "content": "f0ab03e2"
+  },
+  "/docs/chapter2/Chapt2Fig4/Chapt2Fig4_matlab-6bc": {
+    "__comp": "17896441",
+    "content": "7ddf2195"
+  },
+  "/docs/chapter3/Chapt3Exercise7/-b53": {
+    "__comp": "17896441",
+    "content": "84db0643"
+  },
+  "/docs/chapter3/Chapt3Exercise7/Chapt3Exercise7_matlab-858": {
+    "__comp": "17896441",
+    "content": "71275b4b"
+  },
+  "/docs/chapter3/Chapt3Fig14/-f78": {
+    "__comp": "17896441",
+    "content": "6153cc1e"
+  },
+  "/docs/chapter3/Chapt3Fig14/Chapt3Fig14_matlab-e47": {
+    "__comp": "17896441",
+    "content": "ef7e5304"
+  },
+  "/docs/chapter4/Chapt4Exercise2a/-cca": {
+    "__comp": "17896441",
+    "content": "33462a87"
+  },
+  "/docs/chapter4/Chapt4Exercise2a/Chapt4Exercise2a_matlab-3c8": {
+    "__comp": "17896441",
+    "content": "fc62061e"
+  },
+  "/docs/chapter4/Chapt4Exercise2b/-9c6": {
+    "__comp": "17896441",
+    "content": "d6a564e9"
+  },
+  "/docs/chapter4/Chapt4Exercise2b/Chapt4Exercise2b_matlab-d24": {
+    "__comp": "17896441",
+    "content": "6c2470e1"
+  },
+  "/docs/chapter4/Chapt4Exercise3a/-abf": {
+    "__comp": "17896441",
+    "content": "d627f751"
+  },
+  "/docs/chapter4/Chapt4Exercise3a/Chapt4Exercise3a_matlab-b4f": {
+    "__comp": "17896441",
+    "content": "541a088e"
+  },
+  "/docs/chapter4/Chapt4Exercise3b/-09f": {
+    "__comp": "17896441",
+    "content": "af4f75f4"
+  },
+  "/docs/chapter4/Chapt4Exercise3b/Chapt4Exercise3b_matlab-2b5": {
+    "__comp": "17896441",
+    "content": "a3bc1d19"
+  },
+  "/docs/chapter4/Chapt4Exercise4a/-c68": {
+    "__comp": "17896441",
+    "content": "7234da5f"
+  },
+  "/docs/chapter4/Chapt4Exercise4a/Chapt4Exercise4a_matlab-b05": {
+    "__comp": "17896441",
+    "content": "4249da51"
+  },
+  "/docs/chapter4/Chapt4Exercise4b1/-85d": {
+    "__comp": "17896441",
+    "content": "a3663aae"
+  },
+  "/docs/chapter4/Chapt4Exercise4b1/Chapt4Exercise4b1_matlab-ef5": {
+    "__comp": "17896441",
+    "content": "30fde096"
+  },
+  "/docs/chapter4/Chapt4Exercise4b2/-355": {
+    "__comp": "17896441",
+    "content": "4e955339"
+  },
+  "/docs/chapter4/Chapt4Exercise4b2/Chapt4Exercise4b2_matlab-de1": {
+    "__comp": "17896441",
+    "content": "4d7e4758"
+  },
+  "/docs/chapter4/Chapt4Exercise4b3/-1dd": {
+    "__comp": "17896441",
+    "content": "e4ef82bd"
+  },
+  "/docs/chapter4/Chapt4Exercise4b3/Chapt4Exercise4b3_matlab-836": {
+    "__comp": "17896441",
+    "content": "3b2350f0"
+  },
+  "/docs/chapter4/Chapt4Exercise5/-e22": {
+    "__comp": "17896441",
+    "content": "c88836be"
+  },
+  "/docs/chapter4/Chapt4Exercise5/Chapt4Exercise5_matlab-cd0": {
+    "__comp": "17896441",
+    "content": "98f1b293"
+  },
+  "/docs/chapter4/Chapt4Exercise7a/-d89": {
+    "__comp": "17896441",
+    "content": "eb30aff3"
+  },
+  "/docs/chapter4/Chapt4Exercise7a/Chapt4Exercise7a_matlab-c36": {
+    "__comp": "17896441",
+    "content": "cf350e9c"
+  },
+  "/docs/chapter4/Chapt4Exercise7b/-e0d": {
+    "__comp": "17896441",
+    "content": "10e79438"
+  },
+  "/docs/chapter4/Chapt4Exercise7b/Chapt4Exercise7b_matlab-a12": {
+    "__comp": "17896441",
+    "content": "5a3f7000"
+  },
+  "/docs/chapter4/Chapt4Exercise8/-2cc": {
+    "__comp": "17896441",
+    "content": "734701e1"
+  },
+  "/docs/chapter4/Chapt4Exercise8/Chapt4Exercise8_matlab-b44": {
+    "__comp": "17896441",
+    "content": "ba7e6007"
+  },
+  "/docs/chapter4/Chapt4Exercise9/-f5a": {
+    "__comp": "17896441",
+    "content": "bd833a2a"
+  },
+  "/docs/chapter4/Chapt4Exercise9/Chapt4Exercise9_matlab-77d": {
+    "__comp": "17896441",
+    "content": "7275c2c4"
+  },
+  "/docs/chapter5/Chapt5Exercise5/-9eb": {
+    "__comp": "17896441",
+    "content": "a1c891e7"
+  },
+  "/docs/chapter5/Chapt5Exercise5/Chapt5Exercise5_matlab-a36": {
+    "__comp": "17896441",
+    "content": "1f89380a"
+  },
+  "/docs/chapter6/Chapt6Exercise10/-9e7": {
+    "__comp": "17896441",
+    "content": "19d015d2"
+  },
+  "/docs/chapter6/Chapt6Exercise10/Chapt6Exercise10_matlab-ff0": {
+    "__comp": "17896441",
+    "content": "f64a9c46"
+  },
+  "/docs/chapter6/Chapt6Exercise4c/-dce": {
+    "__comp": "17896441",
+    "content": "58bd7ea5"
+  },
+  "/docs/chapter6/Chapt6Exercise4c/Chapt6Exercise4c_matlab-c42": {
+    "__comp": "17896441",
+    "content": "5bdbe18f"
+  },
+  "/docs/chapter6/Chapt6Exercise4d/-6e7": {
+    "__comp": "17896441",
+    "content": "ed9090e1"
+  },
+  "/docs/chapter6/Chapt6Exercise4d/Chapt6Exercise4d_matlab-b3b": {
+    "__comp": "17896441",
+    "content": "2d34242e"
+  },
+  "/docs/chapter7/Chapt7Exercise3/-cbd": {
+    "__comp": "17896441",
+    "content": "2111d0cd"
+  },
+  "/docs/chapter7/Chapt7Exercise3/Chapt7Exercise3_matlab-50e": {
+    "__comp": "17896441",
+    "content": "717801f5"
+  },
+  "/docs/chapter7/Chapt7Fig3/-ff5": {
+    "__comp": "17896441",
+    "content": "6c9218ae"
+  },
+  "/docs/chapter7/Chapt7Fig3/Chapt7Fig3_matlab-ccc": {
+    "__comp": "17896441",
+    "content": "26c92b85"
+  },
+  "/docs/chapter7/Chapt7Fig4a/-50b": {
+    "__comp": "17896441",
+    "content": "9fc2df0b"
+  },
+  "/docs/chapter7/Chapt7Fig4a/Chapt7Fig4a_matlab-e70": {
+    "__comp": "17896441",
+    "content": "972db9c1"
+  },
+  "/docs/chapter7/Chapt7Fig4b/-ca4": {
+    "__comp": "17896441",
+    "content": "f28bd333"
+  },
+  "/docs/chapter7/Chapt7Fig4b/Chapt7Fig4b_matlab-14a": {
+    "__comp": "17896441",
+    "content": "20456e8b"
+  },
+  "/docs/chapter7/Chapt7Fig5a/-687": {
+    "__comp": "17896441",
+    "content": "0e77f85d"
+  },
+  "/docs/chapter7/Chapt7Fig5a/Chapt7Fig5a_matlab-939": {
+    "__comp": "17896441",
+    "content": "44121914"
+  },
+  "/docs/chapter7/Chapt7Fig5b/-601": {
+    "__comp": "17896441",
+    "content": "cf3c6008"
+  },
+  "/docs/chapter7/Chapt7Fig5b/Chapt7Fig5b_matlab-c2b": {
+    "__comp": "17896441",
+    "content": "f188d919"
+  },
+  "/docs/chapter7/Chapt7Fig6a/-826": {
+    "__comp": "17896441",
+    "content": "8095b868"
+  },
+  "/docs/chapter7/Chapt7Fig6a/Chapt7Fig6a_matlab-9f0": {
+    "__comp": "17896441",
+    "content": "80aa2020"
+  },
+  "/docs/chapter7/Chapt7Fig6b/-2b3": {
+    "__comp": "17896441",
+    "content": "70c40203"
+  },
+  "/docs/chapter7/Chapt7Fig6b/Chapt7Fig6b_matlab-6fa": {
+    "__comp": "17896441",
+    "content": "6303725e"
+  },
+  "/docs/chapter8/Chapt8Exercise1b/-0e6": {
+    "__comp": "17896441",
+    "content": "1028c88e"
+  },
+  "/docs/chapter8/Chapt8Exercise1b/Chapt8Exercise1b_matlab-0d9": {
+    "__comp": "17896441",
+    "content": "42b4d111"
+  },
+  "/docs/chapter8/Chapt8Exercise7a/-a60": {
+    "__comp": "17896441",
+    "content": "2259621f"
+  },
+  "/docs/chapter8/Chapt8Exercise7a/Chapt8Exercise7a_matlab-c09": {
+    "__comp": "17896441",
+    "content": "b6332bf3"
+  },
+  "/docs/chapter8/Chapt8Exercise7b/-173": {
+    "__comp": "17896441",
+    "content": "29dd8c8d"
+  },
+  "/docs/chapter8/Chapt8Exercise7b/Chapt8Exercise7b_matlab-713": {
+    "__comp": "17896441",
+    "content": "66698396"
+  },
+  "/docs/chapter8/Chapt8Fig14a/-7d8": {
+    "__comp": "17896441",
+    "content": "e75651ac"
+  },
+  "/docs/chapter8/Chapt8Fig14a/Chapt8Fig14a_matlab-dce": {
+    "__comp": "17896441",
+    "content": "e8b3c6e7"
+  },
+  "/docs/chapter8/Chapt8Fig14b/-4cf": {
+    "__comp": "17896441",
+    "content": "212ea6a5"
+  },
+  "/docs/chapter8/Chapt8Fig14b/Chapt8Fig14b_matlab-d5a": {
+    "__comp": "17896441",
+    "content": "3800a922"
+  },
+  "/docs/chapter8/Chapt8Fig15/-03e": {
+    "__comp": "17896441",
+    "content": "f8133deb"
+  },
+  "/docs/chapter8/Chapt8Fig15/Chapt8Fig15_matlab-661": {
+    "__comp": "17896441",
+    "content": "d6878e76"
+  },
+  "/docs/chapter9/Chapt9Exercise1/-62d": {
+    "__comp": "17896441",
+    "content": "35f835ed"
+  },
+  "/docs/chapter9/Chapt9Exercise1/Chapt9Exercise1_matlab-fc4": {
+    "__comp": "17896441",
+    "content": "e1482d73"
+  },
+  "/docs/chapter9/Chapt9Exercise2/-f3c": {
+    "__comp": "17896441",
+    "content": "798a8e78"
+  },
+  "/docs/chapter9/Chapt9Exercise2/Chapt9Exercise2_matlab-4a4": {
+    "__comp": "17896441",
+    "content": "1014b594"
+  },
+  "/docs/chapter9/Chapt9Exercise3/-37c": {
+    "__comp": "17896441",
+    "content": "12e8dfe7"
+  },
+  "/docs/chapter9/Chapt9Exercise3/Chapt9Exercise3_matlab-ac3": {
+    "__comp": "17896441",
+    "content": "8e9578b2"
+  },
+  "/docs/chapter9/Chapt9Exercise4/-d9a": {
+    "__comp": "17896441",
+    "content": "b5946b5c"
+  },
+  "/docs/chapter9/Chapt9Exercise4/Chapt9Exercise4_matlab-ac6": {
+    "__comp": "17896441",
+    "content": "036b1664"
+  },
+  "/docs/chapter9/Chapt9Exercise5/-893": {
+    "__comp": "17896441",
+    "content": "a69231c9"
+  },
+  "/docs/chapter9/Chapt9Exercise5/Chapt9Exercise5_matlab-84a": {
+    "__comp": "17896441",
+    "content": "a0ab89a1"
+  },
+  "/docs/chapter9/Chapt9Fig6a1/-5fb": {
+    "__comp": "17896441",
+    "content": "cab5c359"
+  },
+  "/docs/chapter9/Chapt9Fig6a1/Chapt9Fig6a1_matlab-121": {
+    "__comp": "17896441",
+    "content": "2c5aa1de"
+  },
+  "/docs/chapter9/Chapt9Fig6a2/-1fd": {
+    "__comp": "17896441",
+    "content": "88582537"
+  },
+  "/docs/chapter9/Chapt9Fig6a2/Chapt9Fig6a2_matlab-b19": {
+    "__comp": "17896441",
+    "content": "4558cabb"
+  },
+  "/docs/chapter9/Chapt9Fig6b/-d6b": {
+    "__comp": "17896441",
+    "content": "6b061ab0"
+  },
+  "/docs/chapter9/Chapt9Fig6b/Chapt9Fig6b_matlab-a9a": {
+    "__comp": "17896441",
+    "content": "7132ff3d"
+  },
+  "/docs/intro-61d": {
+    "__comp": "17896441",
+    "content": "0e384e19"
+  },
+  "/-2e1": {
+    "__comp": "c4f5d8e4",
+    "__context": {
+      "plugin": "a7456010"
+    },
+    "config": "5e9f5e1a"
+  }
+}

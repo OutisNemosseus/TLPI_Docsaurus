@@ -1,0 +1,26 @@
+{
+  "id": "chapter3/Chapt3Exercise7/index",
+  "title": "Chapter 3 - Exercise 7",
+  "description": "Chapter 3: Quantum Wells and Barriers",
+  "source": "@site/docs/chapter3/Chapt3Exercise7/index.mdx",
+  "sourceDirName": "chapter3/Chapt3Exercise7",
+  "slug": "/chapter3/Chapt3Exercise7/",
+  "permalink": "/docs/chapter3/Chapt3Exercise7/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 3 - Exercise 7",
+    "sidebar_label": "Chapter 3 - Exercise 7"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 2 - Fig 4",
+    "permalink": "/docs/chapter2/Chapt2Fig4/"
+  },
+  "next": {
+    "title": "Chapter 3 - Fig 14",
+    "permalink": "/docs/chapter3/Chapt3Fig14/"
+  }
+}

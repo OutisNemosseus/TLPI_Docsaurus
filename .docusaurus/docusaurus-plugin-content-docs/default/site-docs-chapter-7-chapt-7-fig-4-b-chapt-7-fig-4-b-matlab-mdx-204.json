@@ -1,0 +1,17 @@
+{
+  "id": "chapter7/Chapt7Fig4b/Chapt7Fig4b_matlab",
+  "title": "Chapter 7 - Fig 4B - MATLAB",
+  "description": "<a href=\"/programs/matlab/Chapt7Fig4b/Chapt7Fig4b.m\" download=\"Chapt7Fig4b.m\"",
+  "source": "@site/docs/chapter7/Chapt7Fig4b/Chapt7Fig4b_matlab.mdx",
+  "sourceDirName": "chapter7/Chapt7Fig4b",
+  "slug": "/chapter7/Chapt7Fig4b/Chapt7Fig4b_matlab",
+  "permalink": "/docs/chapter7/Chapt7Fig4b/Chapt7Fig4b_matlab",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 7 - Fig 4B - MATLAB",
+    "sidebar_label": "MATLAB Code"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "id": "chapter8/Chapt8Fig15/index",
+  "title": "Chapter 8 - Fig 15",
+  "description": "Chapter 8: Perturbation Theory",
+  "source": "@site/docs/chapter8/Chapt8Fig15/index.mdx",
+  "sourceDirName": "chapter8/Chapt8Fig15",
+  "slug": "/chapter8/Chapt8Fig15/",
+  "permalink": "/docs/chapter8/Chapt8Fig15/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 8 - Fig 15",
+    "sidebar_label": "Chapter 8 - Fig 15"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 8 - Fig 14B",
+    "permalink": "/docs/chapter8/Chapt8Fig14b/"
+  },
+  "next": {
+    "title": "Chapter 9 - Exercise 1",
+    "permalink": "/docs/chapter9/Chapt9Exercise1/"
+  }
+}

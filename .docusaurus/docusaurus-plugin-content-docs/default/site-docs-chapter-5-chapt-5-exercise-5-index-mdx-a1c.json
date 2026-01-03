@@ -1,0 +1,26 @@
+{
+  "id": "chapter5/Chapt5Exercise5/index",
+  "title": "Chapter 5 - Exercise 5",
+  "description": "Chapter 5: Tunneling and Resonance",
+  "source": "@site/docs/chapter5/Chapt5Exercise5/index.mdx",
+  "sourceDirName": "chapter5/Chapt5Exercise5",
+  "slug": "/chapter5/Chapt5Exercise5/",
+  "permalink": "/docs/chapter5/Chapt5Exercise5/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 5 - Exercise 5",
+    "sidebar_label": "Chapter 5 - Exercise 5"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 4 - Exercise 9",
+    "permalink": "/docs/chapter4/Chapt4Exercise9/"
+  },
+  "next": {
+    "title": "Chapter 6 - Exercise 10",
+    "permalink": "/docs/chapter6/Chapt6Exercise10/"
+  }
+}

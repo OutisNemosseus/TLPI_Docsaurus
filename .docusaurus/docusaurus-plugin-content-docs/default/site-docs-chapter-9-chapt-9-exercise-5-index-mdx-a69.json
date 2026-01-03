@@ -1,0 +1,26 @@
+{
+  "id": "chapter9/Chapt9Exercise5/index",
+  "title": "Chapter 9 - Exercise 5",
+  "description": "Chapter 9: Statistical Mechanics",
+  "source": "@site/docs/chapter9/Chapt9Exercise5/index.mdx",
+  "sourceDirName": "chapter9/Chapt9Exercise5",
+  "slug": "/chapter9/Chapt9Exercise5/",
+  "permalink": "/docs/chapter9/Chapt9Exercise5/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 9 - Exercise 5",
+    "sidebar_label": "Chapter 9 - Exercise 5"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 9 - Exercise 4",
+    "permalink": "/docs/chapter9/Chapt9Exercise4/"
+  },
+  "next": {
+    "title": "Chapter 9 - Fig 6A1",
+    "permalink": "/docs/chapter9/Chapt9Fig6a1/"
+  }
+}

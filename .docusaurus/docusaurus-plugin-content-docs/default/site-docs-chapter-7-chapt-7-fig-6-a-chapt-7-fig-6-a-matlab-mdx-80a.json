@@ -1,0 +1,17 @@
+{
+  "id": "chapter7/Chapt7Fig6a/Chapt7Fig6a_matlab",
+  "title": "Chapter 7 - Fig 6A - MATLAB",
+  "description": "<a href=\"/programs/matlab/Chapt7Fig6a/Chapt7Fig6a.m\" download=\"Chapt7Fig6a.m\"",
+  "source": "@site/docs/chapter7/Chapt7Fig6a/Chapt7Fig6a_matlab.mdx",
+  "sourceDirName": "chapter7/Chapt7Fig6a",
+  "slug": "/chapter7/Chapt7Fig6a/Chapt7Fig6a_matlab",
+  "permalink": "/docs/chapter7/Chapt7Fig6a/Chapt7Fig6a_matlab",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "Chapter 7 - Fig 6A - MATLAB",
+    "sidebar_label": "MATLAB Code"
+  }
+}

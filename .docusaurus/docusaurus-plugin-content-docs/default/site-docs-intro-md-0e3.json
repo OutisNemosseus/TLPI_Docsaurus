@@ -1,0 +1,19 @@
+{
+  "id": "intro",
+  "title": "Applied Quantum Mechanics - MATLAB Programs",
+  "description": "Welcome to the interactive documentation for the MATLAB programs from Applied Quantum Mechanics by A.F.J. Levi.",
+  "source": "@site/docs/intro.md",
+  "sourceDirName": ".",
+  "slug": "/intro",
+  "permalink": "/docs/intro",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "next": {
+    "title": "Chapter 1 - Exercise 8",
+    "permalink": "/docs/chapter1/Chapt1Exercise8/"
+  }
+}
