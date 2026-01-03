@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>t_sigsuspend.c - TLPI</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1e1e1e;color:#d4d4d4;min-height:100vh}
+    .header{background:#252526;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #3c3c3c;flex-wrap:wrap;gap:12px}
+    .file-info{display:flex;flex-direction:column;gap:4px}
+    .filename{font-size:1.25rem;font-weight:600;color:#fff}
+    .category{font-size:0.875rem;color:#808080}
+    .file-type{display:inline-block;padding:2px 8px;background:#555555;color:#fff;border-radius:4px;font-size:0.75rem;font-weight:600;margin-left:8px}
+    .actions{display:flex;gap:12px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:none;border-radius:6px;font-size:0.875rem;font-weight:500;cursor:pointer;transition:all 0.2s}
+    .btn-copy{background:#0e639c;color:#fff}
+    .btn-copy:hover{background:#1177bb}
+    .btn-copy.copied{background:#16825d}
+    .btn-download{background:#10b981;color:#fff}
+    .btn-download:hover{background:#059669}
+    .btn svg{width:16px;height:16px}
+    #editor{height:calc(100vh - 80px)}
+    .toast{position:fixed;bottom:24px;right:24px;background:#16825d;color:#fff;padding:12px 24px;border-radius:8px;font-size:0.875rem;opacity:0;transform:translateY(20px);transition:all 0.3s;z-index:1000}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .lines{font-size:0.75rem;color:#6b7280;margin-top:4px}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="file-info">
+      <div class="filename">t_sigsuspend.c<span class="file-type">C Source</span></div>
+      <div class="category">signals</div>
+      <div class="lines" id="lines"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-copy" id="copyBtn" onclick="copyCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        <span id="copyText">Copy</span>
+      </button>
+      <button class="btn btn-download" onclick="downloadCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        <span>Download</span>
+      </button>
+    </div>
+  </div>
+  <div id="editor"></div>
+  <div class="toast" id="toast"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+  <script>
+    const CODE=`/*************************************************************************\\
+*                  Copyright (C) Michael Kerrisk, 2019.                   *
+*                                                                         *
+* This program is free software. You may use, modify, and redistribute it *
+* under the terms of the GNU General Public License as published by the   *
+* Free Software Foundation, either version 3 or (at your option) any      *
+* later version. This program is distributed without any warranty.  See   *
+* the file COPYING.gpl-v3 for details.                                    *
+\\*************************************************************************/
+
+/* Listing 22-5 */
+
+/* t_sigsuspend.c
+
+   A short program to demonstrate why sigsuspend(&mask) is preferable to
+   calling sigprocmask(SIG_SETMASK, &mask, NULL) + pause() separately.
+   (By default this program uses sigsuspend(). To make it use pause(),
+   compile using "cc -DUSE_PAUSE".)
+
+   Usage: t_sigsuspend [sleep-time]
+
+   Send the SIGINT signal to this program by typing control-C (^C).
+   (Terminate the program using SIGQUIT, i.e., type control-\\ (^\\).)
+
+   This program contains extra code that does not appear in the version shown
+   in the book. By defining USE_PAUSE when compiling, we can replace the use of
+   sigsuspend() by the nonatomic sigprocmask() + pause(). This allows us to
+   show that doing the latter way will cause some signals to be lost.
+*/
+#define _GNU_SOURCE     /* Get strsignal() declaration from <string.h> */
+#include <string.h>
+#include <signal.h>
+#include <time.h>
+#include "signal_functions.h"           /* Declarations of printSigMask()
+                                           and printPendingSigs() */
+#include "tlpi_hdr.h"
+
+/* Global variable incremented each time SIGINT is handled */
+
+static volatile int sigintCnt = 0;
+static volatile sig_atomic_t gotSigquit = 0;
+
+static void
+handler(int sig)
+{
+    printf("Caught signal %d (%s)\\n", sig, strsignal(sig));
+                                        /* UNSAFE (see Section 21.1.2) */
+    if (sig == SIGQUIT)
+        gotSigquit = 1;
+    sigintCnt++;
+}
+
+int
+main(int argc, char *argv[])
+{
+    int loopNum;
+#ifdef USE_PAUSE
+    int sleepTime;
+#endif
+    time_t startTime;
+    sigset_t origMask, blockMask;
+    struct sigaction sa;
+
+    printSigMask(stdout, "Initial signal mask is:\\n");
+
+    sigemptyset(&blockMask);
+    sigaddset(&blockMask, SIGINT);
+    sigaddset(&blockMask, SIGQUIT);
+
+#ifdef USE_PAUSE
+    sleepTime = (argc > 1) ? getInt(argv[1], GN_NONNEG, NULL) : 0;
+#endif
+
+    /* Block SIGINT and SIGQUIT - at this point we assume that these signals
+      are not already blocked (obviously true in this simple program) so that
+      'origMask' will not contain either of these signals after the call. */
+
+    if (sigprocmask(SIG_BLOCK, &blockMask, &origMask) == -1)
+        errExit("sigprocmask - SIG_BLOCK");
+
+    /* Set up handlers for SIGINT and SIGQUIT */
+
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    sa.sa_handler = handler;
+    if (sigaction(SIGINT, &sa, NULL) == -1)
+        errExit("sigaction");
+    if (sigaction(SIGQUIT, &sa, NULL) == -1)
+        errExit("sigaction");
+
+    /* Loop until SIGQUIT received */
+
+    for (loopNum = 1; !gotSigquit; loopNum++) {
+        printf("=== LOOP %d\\n", loopNum);
+
+        /* Simulate a critical section by delaying a few seconds */
+
+        printSigMask(stdout, "Starting critical section, signal mask is:\\n");
+        for (startTime = time(NULL); time(NULL) < startTime + 4; )
+            continue;                   /* Run for a few seconds elapsed time */
+
+#ifndef USE_PAUSE
+        /* The right way: use sigsuspend() to atomically unblock
+           signals and pause waiting for signal */
+
+        printPendingSigs(stdout,
+                "Before sigsuspend() - pending signals:\\n");
+        if (sigsuspend(&origMask) == -1 && errno != EINTR)
+            errExit("sigsuspend");
+#else
+
+        /* The wrong way: unblock signal using sigprocmask(),
+           then pause() */
+
+        if (sigprocmask(SIG_SETMASK, &origMask, NULL) == -1)
+            errExit("sigprocmask - SIG_SETMASK");
+
+        /* At this point, if SIGINT arrives, it will be caught and
+           handled before the pause() call and, in consequence,
+           pause() will block. (And thus only another SIGINT signal
+           AFTER the pause call() will actually cause the pause()
+           call to be interrupted.)  Here we make the window between
+           the two calls a bit larger so that we have a better
+           chance of sending the signal. */
+
+        if (sleepTime > 0) {
+            printf("Unblocked SIGINT, now waiting for %d seconds\\n", sleepTime);
+            for (startTime = time(NULL);
+                    time(NULL) < startTime + sleepTime; )
+                continue;
+            printf("Finished waiting - now going to pause()\\n");
+        }
+
+        /* And now wait for the signal */
+
+        pause();
+
+        printf("Signal count = %d\\n", sigintCnt);
+        sigintCnt = 0;
+#endif
+    }
+
+    /* Restore signal mask so that signals are unblocked */
+
+    if (sigprocmask(SIG_SETMASK, &origMask, NULL) == -1)
+        errExit("sigprocmask - SIG_SETMASK");
+
+    printSigMask(stdout, "=== Exited loop\\nRestored signal mask to:\\n");
+
+    /* Do other processing... */
+
+    exit(EXIT_SUCCESS);
+}
+`;
+    const FILENAME='t_sigsuspend.c';
+    document.getElementById('lines').textContent=CODE.split('\n').length+' lines';
+    require.config({paths:{vs:'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs'}});
+    require(['vs/editor/editor.main'],function(){
+      monaco.editor.create(document.getElementById('editor'),{
+        value:CODE,language:'c',theme:'vs-dark',readOnly:true,automaticLayout:true,
+        fontSize:14,lineNumbers:'on',minimap:{enabled:true},scrollBeyondLastLine:false,
+        padding:{top:16,bottom:16},folding:true,bracketPairColorization:{enabled:true}
+      });
+    });
+    function copyCode(){
+      navigator.clipboard.writeText(CODE).then(()=>{
+        document.getElementById('copyBtn').classList.add('copied');
+        document.getElementById('copyText').textContent='Copied!';
+        showToast('Copied!');
+        setTimeout(()=>{document.getElementById('copyBtn').classList.remove('copied');document.getElementById('copyText').textContent='Copy';},2000);
+      });
+    }
+    function downloadCode(){
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([CODE],{type:'text/plain'}));
+      a.download=FILENAME;a.click();
+      showToast('Download started!');
+    }
+    function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
+  </script>
+</body>
+</html>

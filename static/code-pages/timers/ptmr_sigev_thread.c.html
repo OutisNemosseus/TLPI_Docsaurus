@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ptmr_sigev_thread.c - TLPI</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1e1e1e;color:#d4d4d4;min-height:100vh}
+    .header{background:#252526;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #3c3c3c;flex-wrap:wrap;gap:12px}
+    .file-info{display:flex;flex-direction:column;gap:4px}
+    .filename{font-size:1.25rem;font-weight:600;color:#fff}
+    .category{font-size:0.875rem;color:#808080}
+    .file-type{display:inline-block;padding:2px 8px;background:#555555;color:#fff;border-radius:4px;font-size:0.75rem;font-weight:600;margin-left:8px}
+    .actions{display:flex;gap:12px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:none;border-radius:6px;font-size:0.875rem;font-weight:500;cursor:pointer;transition:all 0.2s}
+    .btn-copy{background:#0e639c;color:#fff}
+    .btn-copy:hover{background:#1177bb}
+    .btn-copy.copied{background:#16825d}
+    .btn-download{background:#10b981;color:#fff}
+    .btn-download:hover{background:#059669}
+    .btn svg{width:16px;height:16px}
+    #editor{height:calc(100vh - 80px)}
+    .toast{position:fixed;bottom:24px;right:24px;background:#16825d;color:#fff;padding:12px 24px;border-radius:8px;font-size:0.875rem;opacity:0;transform:translateY(20px);transition:all 0.3s;z-index:1000}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .lines{font-size:0.75rem;color:#6b7280;margin-top:4px}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="file-info">
+      <div class="filename">ptmr_sigev_thread.c<span class="file-type">C Source</span></div>
+      <div class="category">timers</div>
+      <div class="lines" id="lines"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-copy" id="copyBtn" onclick="copyCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        <span id="copyText">Copy</span>
+      </button>
+      <button class="btn btn-download" onclick="downloadCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        <span>Download</span>
+      </button>
+    </div>
+  </div>
+  <div id="editor"></div>
+  <div class="toast" id="toast"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+  <script>
+    const CODE=`/*************************************************************************\\
+*                  Copyright (C) Michael Kerrisk, 2019.                   *
+*                                                                         *
+* This program is free software. You may use, modify, and redistribute it *
+* under the terms of the GNU General Public License as published by the   *
+* Free Software Foundation, either version 3 or (at your option) any      *
+* later version. This program is distributed without any warranty.  See   *
+* the file COPYING.gpl-v3 for details.                                    *
+\\*************************************************************************/
+
+/* Listing 23-7 */
+
+/* ptmr_sigev_thread.c
+
+   This program demonstrates the use of threads as the notification mechanism
+   for expirations of a POSIX timer. Each of the program's command-line
+   arguments specifies the initial value and interval for a POSIX timer. The
+   format of these arguments is defined by the function itimerspecFromStr().
+
+   The program creates and arms one timer for each command-line argument.
+   The timer notification method is specified as SIGEV_THREAD, causing the
+   timer notifications to be delivered via a thread that invokes threadFunc()
+   as its start function. The threadFunc() function displays information
+   about the timer expiration, increments a global counter of timer expirations,
+   and signals a condition variable to indicate that the counter has changed.
+   In the main thread, a loop waits on the condition variable, and each time
+   the condition variable is signaled, the main thread prints the value of the
+   global variable that counts timer expirations.
+
+   Kernel support for Linux timers is provided since Linux 2.6. On older
+   systems, an incomplete user-space implementation of POSIX timers
+   was provided in glibc.
+*/
+#include <signal.h>
+#include <time.h>
+#include <pthread.h>
+#include "curr_time.h"              /* Declares currTime() */
+#include "tlpi_hdr.h"
+#include "itimerspec_from_str.h"    /* Declares itimerspecFromStr() */
+
+static pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+
+static int expireCnt = 0;           /* Number of expirations of all timers */
+
+static void                         /* Thread notification function */
+threadFunc(union sigval sv)
+{
+    timer_t *tidptr;
+    int s;
+
+    tidptr = sv.sival_ptr;
+
+    printf("[%s] Thread notify\\n", currTime("%T"));
+    printf("    timer ID=%ld\\n", (long) *tidptr);
+    printf("    timer_getoverrun()=%d\\n", timer_getoverrun(*tidptr));
+
+    /* Increment counter variable shared with main thread and signal
+       condition variable to notify main thread of the change. */
+
+    s = pthread_mutex_lock(&mtx);
+    if (s != 0)
+        errExitEN(s, "pthread_mutex_lock");
+
+    expireCnt += 1 + timer_getoverrun(*tidptr);
+
+    s = pthread_mutex_unlock(&mtx);
+    if (s != 0)
+        errExitEN(s, "pthread_mutex_unlock");
+
+    s = pthread_cond_signal(&cond);
+    if (s != 0)
+        errExitEN(s, "pthread_cond_signal");
+}
+
+int
+main(int argc, char *argv[])
+{
+    struct sigevent sev;
+    struct itimerspec ts;
+    timer_t *tidlist;
+    int s, j;
+
+    if (argc < 2)
+        usageErr("%s secs[/nsecs][:int-secs[/int-nsecs]]...\\n", argv[0]);
+
+    tidlist = calloc(argc - 1, sizeof(timer_t));
+    if (tidlist == NULL)
+        errExit("malloc");
+
+    sev.sigev_notify = SIGEV_THREAD;            /* Notify via thread */
+    sev.sigev_notify_function = threadFunc;     /* Thread start function */
+    sev.sigev_notify_attributes = NULL;
+            /* Could be pointer to pthread_attr_t structure */
+
+    /* Create and start one timer for each command-line argument */
+
+    for (j = 0; j < argc - 1; j++) {
+        itimerspecFromStr(argv[j + 1], &ts);
+
+        sev.sigev_value.sival_ptr = &tidlist[j];
+                /* Passed as argument to threadFunc() */
+
+        if (timer_create(CLOCK_REALTIME, &sev, &tidlist[j]) == -1)
+            errExit("timer_create");
+        printf("Timer ID: %ld (%s)\\n", (long) tidlist[j], argv[j + 1]);
+
+        if (timer_settime(tidlist[j], 0, &ts, NULL) == -1)
+            errExit("timer_settime");
+    }
+
+    /* The main thread waits on a condition variable that is signaled
+       on each invocation of the thread notification function. We
+       print a message so that the user can see that this occurred. */
+
+    s = pthread_mutex_lock(&mtx);
+    if (s != 0)
+        errExitEN(s, "pthread_mutex_lock");
+
+    for (;;) {
+        s = pthread_cond_wait(&cond, &mtx);
+        if (s != 0)
+            errExitEN(s, "pthread_cond_wait");
+        printf("main(): expireCnt = %d\\n", expireCnt);
+    }
+}
+`;
+    const FILENAME='ptmr_sigev_thread.c';
+    document.getElementById('lines').textContent=CODE.split('\n').length+' lines';
+    require.config({paths:{vs:'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs'}});
+    require(['vs/editor/editor.main'],function(){
+      monaco.editor.create(document.getElementById('editor'),{
+        value:CODE,language:'c',theme:'vs-dark',readOnly:true,automaticLayout:true,
+        fontSize:14,lineNumbers:'on',minimap:{enabled:true},scrollBeyondLastLine:false,
+        padding:{top:16,bottom:16},folding:true,bracketPairColorization:{enabled:true}
+      });
+    });
+    function copyCode(){
+      navigator.clipboard.writeText(CODE).then(()=>{
+        document.getElementById('copyBtn').classList.add('copied');
+        document.getElementById('copyText').textContent='Copied!';
+        showToast('Copied!');
+        setTimeout(()=>{document.getElementById('copyBtn').classList.remove('copied');document.getElementById('copyText').textContent='Copy';},2000);
+      });
+    }
+    function downloadCode(){
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([CODE],{type:'text/plain'}));
+      a.download=FILENAME;a.click();
+      showToast('Download started!');
+    }
+    function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
+  </script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>system.c - TLPI</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1e1e1e;color:#d4d4d4;min-height:100vh}
+    .header{background:#252526;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #3c3c3c;flex-wrap:wrap;gap:12px}
+    .file-info{display:flex;flex-direction:column;gap:4px}
+    .filename{font-size:1.25rem;font-weight:600;color:#fff}
+    .category{font-size:0.875rem;color:#808080}
+    .file-type{display:inline-block;padding:2px 8px;background:#555555;color:#fff;border-radius:4px;font-size:0.75rem;font-weight:600;margin-left:8px}
+    .actions{display:flex;gap:12px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:none;border-radius:6px;font-size:0.875rem;font-weight:500;cursor:pointer;transition:all 0.2s}
+    .btn-copy{background:#0e639c;color:#fff}
+    .btn-copy:hover{background:#1177bb}
+    .btn-copy.copied{background:#16825d}
+    .btn-download{background:#10b981;color:#fff}
+    .btn-download:hover{background:#059669}
+    .btn svg{width:16px;height:16px}
+    #editor{height:calc(100vh - 80px)}
+    .toast{position:fixed;bottom:24px;right:24px;background:#16825d;color:#fff;padding:12px 24px;border-radius:8px;font-size:0.875rem;opacity:0;transform:translateY(20px);transition:all 0.3s;z-index:1000}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .lines{font-size:0.75rem;color:#6b7280;margin-top:4px}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="file-info">
+      <div class="filename">system.c<span class="file-type">C Source</span></div>
+      <div class="category">procexec</div>
+      <div class="lines" id="lines"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-copy" id="copyBtn" onclick="copyCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        <span id="copyText">Copy</span>
+      </button>
+      <button class="btn btn-download" onclick="downloadCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        <span>Download</span>
+      </button>
+    </div>
+  </div>
+  <div id="editor"></div>
+  <div class="toast" id="toast"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+  <script>
+    const CODE=`/*************************************************************************\\
+*                  Copyright (C) Michael Kerrisk, 2019.                   *
+*                                                                         *
+* This program is free software. You may use, modify, and redistribute it *
+* under the terms of the GNU General Public License as published by the   *
+* Free Software Foundation, either version 3 or (at your option) any      *
+* later version. This program is distributed without any warranty.  See   *
+* the file COPYING.gpl-v3 for details.                                    *
+\\*************************************************************************/
+
+/* Listing 27-9 */
+
+/* system.c
+
+   An implementation of system(3).
+*/
+#include <unistd.h>
+#include <signal.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <errno.h>
+
+int
+system(const char *command)
+{
+    sigset_t blockMask, origMask;
+    struct sigaction saIgnore, saOrigQuit, saOrigInt, saDefault;
+    pid_t childPid;
+    int status, savedErrno;
+
+    if (command == NULL)                /* Is a shell available? */
+        return system(":") == 0;
+
+    /* The parent process (the caller of system()) blocks SIGCHLD
+       and ignore SIGINT and SIGQUIT while the child is executing.
+       We must change the signal settings prior to forking, to avoid
+       possible race conditions. This means that we must undo the
+       effects of the following in the child after fork(). */
+
+    sigemptyset(&blockMask);            /* Block SIGCHLD */
+    sigaddset(&blockMask, SIGCHLD);
+    sigprocmask(SIG_BLOCK, &blockMask, &origMask);
+
+    saIgnore.sa_handler = SIG_IGN;      /* Ignore SIGINT and SIGQUIT */
+    saIgnore.sa_flags = 0;
+    sigemptyset(&saIgnore.sa_mask);
+    sigaction(SIGINT, &saIgnore, &saOrigInt);
+    sigaction(SIGQUIT, &saIgnore, &saOrigQuit);
+
+    switch (childPid = fork()) {
+    case -1: /* fork() failed */
+        status = -1;
+        break;          /* Carry on to reset signal attributes */
+
+    case 0: /* Child: exec command */
+
+        /* We ignore possible error returns because the only specified error
+           is for a failed exec(), and because errors in these calls can't
+           affect the caller of system() (which is a separate process) */
+
+        saDefault.sa_handler = SIG_DFL;
+        saDefault.sa_flags = 0;
+        sigemptyset(&saDefault.sa_mask);
+
+        if (saOrigInt.sa_handler != SIG_IGN)
+            sigaction(SIGINT, &saDefault, NULL);
+        if (saOrigQuit.sa_handler != SIG_IGN)
+            sigaction(SIGQUIT, &saDefault, NULL);
+
+        sigprocmask(SIG_SETMASK, &origMask, NULL);
+
+        execl("/bin/sh", "sh", "-c", command, (char *) NULL);
+        _exit(127);                     /* We could not exec the shell */
+
+    default: /* Parent: wait for our child to terminate */
+
+        /* We must use waitpid() for this task; using wait() could inadvertently
+           collect the status of one of the caller's other children */
+
+        while (waitpid(childPid, &status, 0) == -1) {
+            if (errno != EINTR) {       /* Error other than EINTR */
+                status = -1;
+                break;                  /* So exit loop */
+            }
+        }
+        break;
+    }
+
+    /* Unblock SIGCHLD, restore dispositions of SIGINT and SIGQUIT */
+
+    savedErrno = errno;                 /* The following may change 'errno' */
+
+    sigprocmask(SIG_SETMASK, &origMask, NULL);
+    sigaction(SIGINT, &saOrigInt, NULL);
+    sigaction(SIGQUIT, &saOrigQuit, NULL);
+
+    errno = savedErrno;
+
+    return status;
+}
+`;
+    const FILENAME='system.c';
+    document.getElementById('lines').textContent=CODE.split('\n').length+' lines';
+    require.config({paths:{vs:'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs'}});
+    require(['vs/editor/editor.main'],function(){
+      monaco.editor.create(document.getElementById('editor'),{
+        value:CODE,language:'c',theme:'vs-dark',readOnly:true,automaticLayout:true,
+        fontSize:14,lineNumbers:'on',minimap:{enabled:true},scrollBeyondLastLine:false,
+        padding:{top:16,bottom:16},folding:true,bracketPairColorization:{enabled:true}
+      });
+    });
+    function copyCode(){
+      navigator.clipboard.writeText(CODE).then(()=>{
+        document.getElementById('copyBtn').classList.add('copied');
+        document.getElementById('copyText').textContent='Copied!';
+        showToast('Copied!');
+        setTimeout(()=>{document.getElementById('copyBtn').classList.remove('copied');document.getElementById('copyText').textContent='Copy';},2000);
+      });
+    }
+    function downloadCode(){
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([CODE],{type:'text/plain'}));
+      a.download=FILENAME;a.click();
+      showToast('Download started!');
+    }
+    function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
+  </script>
+</body>
+</html>

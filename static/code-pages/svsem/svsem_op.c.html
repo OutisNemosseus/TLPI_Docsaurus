@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>svsem_op.c - TLPI</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1e1e1e;color:#d4d4d4;min-height:100vh}
+    .header{background:#252526;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #3c3c3c;flex-wrap:wrap;gap:12px}
+    .file-info{display:flex;flex-direction:column;gap:4px}
+    .filename{font-size:1.25rem;font-weight:600;color:#fff}
+    .category{font-size:0.875rem;color:#808080}
+    .file-type{display:inline-block;padding:2px 8px;background:#555555;color:#fff;border-radius:4px;font-size:0.75rem;font-weight:600;margin-left:8px}
+    .actions{display:flex;gap:12px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:none;border-radius:6px;font-size:0.875rem;font-weight:500;cursor:pointer;transition:all 0.2s}
+    .btn-copy{background:#0e639c;color:#fff}
+    .btn-copy:hover{background:#1177bb}
+    .btn-copy.copied{background:#16825d}
+    .btn-download{background:#10b981;color:#fff}
+    .btn-download:hover{background:#059669}
+    .btn svg{width:16px;height:16px}
+    #editor{height:calc(100vh - 80px)}
+    .toast{position:fixed;bottom:24px;right:24px;background:#16825d;color:#fff;padding:12px 24px;border-radius:8px;font-size:0.875rem;opacity:0;transform:translateY(20px);transition:all 0.3s;z-index:1000}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .lines{font-size:0.75rem;color:#6b7280;margin-top:4px}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="file-info">
+      <div class="filename">svsem_op.c<span class="file-type">C Source</span></div>
+      <div class="category">svsem</div>
+      <div class="lines" id="lines"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-copy" id="copyBtn" onclick="copyCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        <span id="copyText">Copy</span>
+      </button>
+      <button class="btn btn-download" onclick="downloadCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        <span>Download</span>
+      </button>
+    </div>
+  </div>
+  <div id="editor"></div>
+  <div class="toast" id="toast"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+  <script>
+    const CODE=`/*************************************************************************\\
+*                  Copyright (C) Michael Kerrisk, 2019.                   *
+*                                                                         *
+* This program is free software. You may use, modify, and redistribute it *
+* under the terms of the GNU General Public License as published by the   *
+* Free Software Foundation, either version 3 or (at your option) any      *
+* later version. This program is distributed without any warranty.  See   *
+* the file COPYING.gpl-v3 for details.                                    *
+\\*************************************************************************/
+
+/* Listing 47-8 */
+
+/* svsem_op.c
+
+   Perform groups of operations on a System V semaphore set.
+
+   Usage as shown in usageError().
+*/
+#include <sys/types.h>
+#include <sys/sem.h>
+#include <ctype.h>
+#include "curr_time.h"          /* Declaration of currTime() */
+#include "tlpi_hdr.h"
+
+#define MAX_SEMOPS 1000         /* Maximum operations that we permit for
+                                   a single semop() */
+
+static void
+usageError(const char *progName)
+{
+    fprintf(stderr, "Usage: %s semid op[,op...] ...\\n\\n", progName);
+    fprintf(stderr, "'op' is either: <sem#>{+|-}<value>[n][u]\\n");
+    fprintf(stderr, "            or: <sem#>=0[n]\\n");
+    fprintf(stderr, "       \\"n\\" means include IPC_NOWAIT in 'op'\\n");
+    fprintf(stderr, "       \\"u\\" means include SEM_UNDO in 'op'\\n\\n");
+    fprintf(stderr, "The operations in each argument are "
+                    "performed in a single semop() call\\n\\n");
+    fprintf(stderr, "e.g.: %s 12345 0+1,1-2un\\n", progName);
+    fprintf(stderr, "      %s 12345 0=0n 1+1,2-1u 1=0\\n", progName);
+    exit(EXIT_FAILURE);
+}
+
+/* Parse comma-delimited operations in 'arg', returning them in the
+   array 'sops'. Return number of operations as function result. */
+
+static int
+parseOps(char *arg, struct sembuf sops[])
+{
+    char *comma, *sign, *remaining, *flags;
+    int numOps;                 /* Number of operations in 'arg' */
+
+    for (numOps = 0, remaining = arg; ; numOps++) {
+        if (numOps >= MAX_SEMOPS)
+            cmdLineErr("Too many operations (maximum=%d): \\"%s\\"\\n",
+                        MAX_SEMOPS, arg);
+
+        if (*remaining == '\\0')
+            fatal("Trailing comma or empty argument: \\"%s\\"", arg);
+        if (!isdigit((unsigned char) *remaining))
+            cmdLineErr("Expected initial digit: \\"%s\\"\\n", arg);
+
+        sops[numOps].sem_num = strtol(remaining, &sign, 10);
+
+        if (*sign == '\\0' || strchr("+-=", *sign) == NULL)
+            cmdLineErr("Expected '+', '-', or '=' in \\"%s\\"\\n", arg);
+        if (!isdigit((unsigned char) *(sign + 1)))
+            cmdLineErr("Expected digit after '%c' in \\"%s\\"\\n", *sign, arg);
+
+        sops[numOps].sem_op = strtol(sign + 1, &flags, 10);
+
+        if (*sign == '-')                       /* Reverse sign of operation */
+            sops[numOps].sem_op = - sops[numOps].sem_op;
+        else if (*sign == '=')                  /* Should be '=0' */
+            if (sops[numOps].sem_op != 0)
+                cmdLineErr("Expected \\"=0\\" in \\"%s\\"\\n", arg);
+
+        sops[numOps].sem_flg = 0;
+        for (;; flags++) {
+            if (*flags == 'n')
+                sops[numOps].sem_flg |= IPC_NOWAIT;
+            else if (*flags == 'u')
+                sops[numOps].sem_flg |= SEM_UNDO;
+            else
+                break;
+        }
+
+        if (*flags != ',' && *flags != '\\0')
+            cmdLineErr("Bad trailing character (%c) in \\"%s\\"\\n", *flags, arg);
+
+        comma = strchr(remaining, ',');
+        if (comma == NULL)
+            break;                              /* No comma --> no more ops */
+        else
+            remaining = comma + 1;
+    }
+
+    return numOps + 1;
+}
+
+int
+main(int argc, char *argv[])
+{
+    struct sembuf sops[MAX_SEMOPS];
+    int ind, nsops;
+
+    if (argc < 2 || strcmp(argv[1], "--help") == 0)
+        usageError(argv[0]);
+
+    for (ind = 2; argv[ind] != NULL; ind++) {
+        nsops = parseOps(argv[ind], sops);
+
+        printf("%5ld, %s: about to semop()  [%s]\\n", (long) getpid(),
+                currTime("%T"), argv[ind]);
+
+        if (semop(getInt(argv[1], 0, "semid"), sops, nsops) == -1)
+            errExit("semop (PID=%ld)", (long) getpid());
+
+        printf("%5ld, %s: semop() completed [%s]\\n", (long) getpid(),
+                currTime("%T"), argv[ind]);
+    }
+
+    exit(EXIT_SUCCESS);
+}
+`;
+    const FILENAME='svsem_op.c';
+    document.getElementById('lines').textContent=CODE.split('\n').length+' lines';
+    require.config({paths:{vs:'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs'}});
+    require(['vs/editor/editor.main'],function(){
+      monaco.editor.create(document.getElementById('editor'),{
+        value:CODE,language:'c',theme:'vs-dark',readOnly:true,automaticLayout:true,
+        fontSize:14,lineNumbers:'on',minimap:{enabled:true},scrollBeyondLastLine:false,
+        padding:{top:16,bottom:16},folding:true,bracketPairColorization:{enabled:true}
+      });
+    });
+    function copyCode(){
+      navigator.clipboard.writeText(CODE).then(()=>{
+        document.getElementById('copyBtn').classList.add('copied');
+        document.getElementById('copyText').textContent='Copied!';
+        showToast('Copied!');
+        setTimeout(()=>{document.getElementById('copyBtn').classList.remove('copied');document.getElementById('copyText').textContent='Copy';},2000);
+      });
+    }
+    function downloadCode(){
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([CODE],{type:'text/plain'}));
+      a.download=FILENAME;a.click();
+      showToast('Download started!');
+    }
+    function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
+  </script>
+</body>
+</html>

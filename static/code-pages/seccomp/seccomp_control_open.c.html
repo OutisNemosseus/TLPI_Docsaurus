@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>seccomp_control_open.c - TLPI</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1e1e1e;color:#d4d4d4;min-height:100vh}
+    .header{background:#252526;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #3c3c3c;flex-wrap:wrap;gap:12px}
+    .file-info{display:flex;flex-direction:column;gap:4px}
+    .filename{font-size:1.25rem;font-weight:600;color:#fff}
+    .category{font-size:0.875rem;color:#808080}
+    .file-type{display:inline-block;padding:2px 8px;background:#555555;color:#fff;border-radius:4px;font-size:0.75rem;font-weight:600;margin-left:8px}
+    .actions{display:flex;gap:12px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:none;border-radius:6px;font-size:0.875rem;font-weight:500;cursor:pointer;transition:all 0.2s}
+    .btn-copy{background:#0e639c;color:#fff}
+    .btn-copy:hover{background:#1177bb}
+    .btn-copy.copied{background:#16825d}
+    .btn-download{background:#10b981;color:#fff}
+    .btn-download:hover{background:#059669}
+    .btn svg{width:16px;height:16px}
+    #editor{height:calc(100vh - 80px)}
+    .toast{position:fixed;bottom:24px;right:24px;background:#16825d;color:#fff;padding:12px 24px;border-radius:8px;font-size:0.875rem;opacity:0;transform:translateY(20px);transition:all 0.3s;z-index:1000}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .lines{font-size:0.75rem;color:#6b7280;margin-top:4px}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="file-info">
+      <div class="filename">seccomp_control_open.c<span class="file-type">C Source</span></div>
+      <div class="category">seccomp</div>
+      <div class="lines" id="lines"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-copy" id="copyBtn" onclick="copyCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        <span id="copyText">Copy</span>
+      </button>
+      <button class="btn btn-download" onclick="downloadCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        <span>Download</span>
+      </button>
+    </div>
+  </div>
+  <div id="editor"></div>
+  <div class="toast" id="toast"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+  <script>
+    const CODE=`/*************************************************************************\\
+*                  Copyright (C) Michael Kerrisk, 2019.                   *
+*                                                                         *
+* This program is free software. You may use, modify, and redistribute it *
+* under the terms of the GNU General Public License as published by the   *
+* Free Software Foundation, either version 3 or (at your option) any      *
+* later version. This program is distributed without any warranty.  See   *
+* the file COPYING.gpl-v3 for details.                                    *
+\\*************************************************************************/
+
+/* Supplementary program for Chapter Z */
+
+/* seccomp_control_open.c
+
+   A simple seccomp filter example. Install a filter that triggers
+   different failures in open(), depending on flags argument.
+*/
+#define _GNU_SOURCE
+#include <stddef.h>
+#include <fcntl.h>
+#include <linux/audit.h>
+#include <sys/syscall.h>
+#include <linux/filter.h>
+#include <linux/seccomp.h>
+#include <sys/prctl.h>
+#include "tlpi_hdr.h"
+
+/* For the x32 ABI, all system call numbers have bit 30 set */
+
+#define X32_SYSCALL_BIT         0x40000000
+
+/* The following is a hack to allow for systems (pre-Linux 4.14) that don't
+   provide SECCOMP_RET_KILL_PROCESS, which kills (all threads in) a process.
+   On those systems, define SECCOMP_RET_KILL_PROCESS as SECCOMP_RET_KILL
+   (which simply kills the calling thread). */
+
+#ifndef SECCOMP_RET_KILL_PROCESS
+#define SECCOMP_RET_KILL_PROCESS SECCOMP_RET_KILL
+#endif
+
+static int
+seccomp(unsigned int operation, unsigned int flags, void *args)
+{
+    return syscall(__NR_seccomp, operation, flags, args);
+}
+
+static void
+install_filter(void)
+{
+    struct sock_filter filter[] = {
+        /* Load architecture */
+
+        BPF_STMT(BPF_LD | BPF_W | BPF_ABS,
+                (offsetof(struct seccomp_data, arch))),
+
+        /* Kill the process if the architecture is not what we expect */
+
+        BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, AUDIT_ARCH_X86_64, 0, 2),
+
+        /* Load system call number */
+
+        BPF_STMT(BPF_LD | BPF_W | BPF_ABS,
+                 (offsetof(struct seccomp_data, nr))),
+
+        /* Kill the process if this is an x32 system call (bit 30 is set) */
+
+        BPF_JUMP(BPF_JMP | BPF_JGE | BPF_K, X32_SYSCALL_BIT, 0, 1),
+        BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_KILL_PROCESS),
+
+        /* Allow syscalls other than open() and openat() */
+
+        BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_open, 2, 0),
+        BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_openat, 3, 0),
+        BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+
+        /* Load second argument of open() (flags) into accumulator */
+
+        BPF_STMT(BPF_LD | BPF_W | BPF_ABS,
+                 (offsetof(struct seccomp_data, args[1]))),
+
+        /* Jump forward to flags processing */
+
+        BPF_JUMP(BPF_JMP | BPF_JA, 1, 0, 0),
+
+        /* Load third argument of openat() (flags) into accumulator */
+
+        BPF_STMT(BPF_LD | BPF_W | BPF_ABS,
+                 (offsetof(struct seccomp_data, args[2]))),
+
+        /* Process flags argument */
+
+        /* Kill the process if O_CREAT was specified */
+
+        BPF_JUMP(BPF_JMP | BPF_JSET | BPF_K, O_CREAT, 0, 1),
+        BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_KILL_PROCESS),
+
+        /* Give ENOTSUP error on attempt to open for writing.
+           Relies on the fact that O_RDWR and O_WRONLY are
+           defined as single, nonoverlapping bits  */
+
+        BPF_JUMP(BPF_JMP | BPF_JSET | BPF_K, O_WRONLY | O_RDWR, 0, 1),
+        BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ERRNO | ENOTSUP),
+
+        /* Otherwise allow the open()/openat() */
+
+        BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW)
+    };
+
+    struct sock_fprog prog = {
+        .len = (unsigned short) (sizeof(filter) / sizeof(filter[0])),
+        .filter = filter,
+    };
+
+    if (seccomp(SECCOMP_SET_MODE_FILTER, 0, &prog))
+        errExit("seccomp");
+    /* On Linux 3.16 and earlier (or if we have old glibc headers that
+       don't define '__NR_seccomp', we must instead use:
+            if (prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog))
+                errExit("prctl-PR_SET_SECCOMP");
+    */
+}
+
+int
+main(int argc, char **argv)
+{
+    if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0))
+        errExit("prctl");
+
+    install_filter();
+
+    if (open("/tmp/a", O_RDONLY) == -1)
+        perror("open1");
+    if (open("/tmp/a", O_WRONLY) == -1)
+        perror("open2");
+    if (open("/tmp/a", O_RDWR) == -1)
+        perror("open3");
+    if (open("/tmp/a", O_CREAT | O_RDWR, 0600) == -1)
+        perror("open4");
+
+    exit(EXIT_SUCCESS);
+}
+`;
+    const FILENAME='seccomp_control_open.c';
+    document.getElementById('lines').textContent=CODE.split('\n').length+' lines';
+    require.config({paths:{vs:'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs'}});
+    require(['vs/editor/editor.main'],function(){
+      monaco.editor.create(document.getElementById('editor'),{
+        value:CODE,language:'c',theme:'vs-dark',readOnly:true,automaticLayout:true,
+        fontSize:14,lineNumbers:'on',minimap:{enabled:true},scrollBeyondLastLine:false,
+        padding:{top:16,bottom:16},folding:true,bracketPairColorization:{enabled:true}
+      });
+    });
+    function copyCode(){
+      navigator.clipboard.writeText(CODE).then(()=>{
+        document.getElementById('copyBtn').classList.add('copied');
+        document.getElementById('copyText').textContent='Copied!';
+        showToast('Copied!');
+        setTimeout(()=>{document.getElementById('copyBtn').classList.remove('copied');document.getElementById('copyText').textContent='Copy';},2000);
+      });
+    }
+    function downloadCode(){
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([CODE],{type:'text/plain'}));
+      a.download=FILENAME;a.click();
+      showToast('Download started!');
+    }
+    function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
+  </script>
+</body>
+</html>

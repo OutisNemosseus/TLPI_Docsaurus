@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>svshm_xfr_writer.c - TLPI</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1e1e1e;color:#d4d4d4;min-height:100vh}
+    .header{background:#252526;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #3c3c3c;flex-wrap:wrap;gap:12px}
+    .file-info{display:flex;flex-direction:column;gap:4px}
+    .filename{font-size:1.25rem;font-weight:600;color:#fff}
+    .category{font-size:0.875rem;color:#808080}
+    .file-type{display:inline-block;padding:2px 8px;background:#555555;color:#fff;border-radius:4px;font-size:0.75rem;font-weight:600;margin-left:8px}
+    .actions{display:flex;gap:12px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:none;border-radius:6px;font-size:0.875rem;font-weight:500;cursor:pointer;transition:all 0.2s}
+    .btn-copy{background:#0e639c;color:#fff}
+    .btn-copy:hover{background:#1177bb}
+    .btn-copy.copied{background:#16825d}
+    .btn-download{background:#10b981;color:#fff}
+    .btn-download:hover{background:#059669}
+    .btn svg{width:16px;height:16px}
+    #editor{height:calc(100vh - 80px)}
+    .toast{position:fixed;bottom:24px;right:24px;background:#16825d;color:#fff;padding:12px 24px;border-radius:8px;font-size:0.875rem;opacity:0;transform:translateY(20px);transition:all 0.3s;z-index:1000}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .lines{font-size:0.75rem;color:#6b7280;margin-top:4px}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="file-info">
+      <div class="filename">svshm_xfr_writer.c<span class="file-type">C Source</span></div>
+      <div class="category">svshm</div>
+      <div class="lines" id="lines"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-copy" id="copyBtn" onclick="copyCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        <span id="copyText">Copy</span>
+      </button>
+      <button class="btn btn-download" onclick="downloadCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        <span>Download</span>
+      </button>
+    </div>
+  </div>
+  <div id="editor"></div>
+  <div class="toast" id="toast"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+  <script>
+    const CODE=`/*************************************************************************\\
+*                  Copyright (C) Michael Kerrisk, 2019.                   *
+*                                                                         *
+* This program is free software. You may use, modify, and redistribute it *
+* under the terms of the GNU General Public License as published by the   *
+* Free Software Foundation, either version 3 or (at your option) any      *
+* later version. This program is distributed without any warranty.  See   *
+* the file COPYING.gpl-v3 for details.                                    *
+\\*************************************************************************/
+
+/* Listing 48-2 */
+
+/*  svshm_xfr_writer.c
+
+   Read buffers of data data from standard input into a System V shared memory
+   segment from which it is copied by svshm_xfr_reader.c
+
+   We use a pair of binary semaphores to ensure that the writer and reader have
+   exclusive, alternating access to the shared memory. (I.e., the writer writes
+   a block of text, then the reader reads, then the writer writes etc). This
+   ensures that each block of data is processed in turn by the writer and
+   reader.
+
+   This program needs to be started before the reader process as it creates the
+   shared memory and semaphores used by both processes.
+
+   Together, these two programs can be used to transfer a stream of data through
+   shared memory as follows:
+
+        \$ svshm_xfr_writer < infile &
+        \$ svshm_xfr_reader > out_file
+*/
+#include "semun.h"              /* Definition of semun union */
+#include "svshm_xfr.h"
+
+int
+main(int argc, char *argv[])
+{
+    int semid, shmid, bytes, xfrs;
+    struct shmseg *shmp;
+    union semun dummy;
+
+    /* Create set containing two semaphores; initialize so that
+       writer has first access to shared memory. */
+
+    semid = semget(SEM_KEY, 2, IPC_CREAT | OBJ_PERMS);
+    if (semid == -1)
+        errExit("semget");
+
+    if (initSemAvailable(semid, WRITE_SEM) == -1)
+        errExit("initSemAvailable");
+    if (initSemInUse(semid, READ_SEM) == -1)
+        errExit("initSemInUse");
+
+    /* Create shared memory; attach at address chosen by system */
+
+    shmid = shmget(SHM_KEY, sizeof(struct shmseg), IPC_CREAT | OBJ_PERMS);
+    if (shmid == -1)
+        errExit("shmget");
+
+    shmp = shmat(shmid, NULL, 0);
+    if (shmp == (void *) -1)
+        errExit("shmat");
+
+    /* Transfer blocks of data from stdin to shared memory */
+
+    for (xfrs = 0, bytes = 0; ; xfrs++, bytes += shmp->cnt) {
+        if (reserveSem(semid, WRITE_SEM) == -1)         /* Wait for our turn */
+            errExit("reserveSem");
+
+        shmp->cnt = read(STDIN_FILENO, shmp->buf, BUF_SIZE);
+        if (shmp->cnt == -1)
+            errExit("read");
+
+        if (releaseSem(semid, READ_SEM) == -1)          /* Give reader a turn */
+            errExit("releaseSem");
+
+        /* Have we reached EOF? We test this after giving the reader
+           a turn so that it can see the 0 value in shmp->cnt. */
+
+        if (shmp->cnt == 0)
+            break;
+    }
+
+    /* Wait until reader has let us have one more turn. We then know
+       reader has finished, and so we can delete the IPC objects. */
+
+    if (reserveSem(semid, WRITE_SEM) == -1)
+        errExit("reserveSem");
+
+    if (semctl(semid, 0, IPC_RMID, dummy) == -1)
+        errExit("semctl");
+    if (shmdt(shmp) == -1)
+        errExit("shmdt");
+    if (shmctl(shmid, IPC_RMID, 0) == -1)
+        errExit("shmctl");
+
+    fprintf(stderr, "Sent %d bytes (%d xfrs)\\n", bytes, xfrs);
+    exit(EXIT_SUCCESS);
+}
+`;
+    const FILENAME='svshm_xfr_writer.c';
+    document.getElementById('lines').textContent=CODE.split('\n').length+' lines';
+    require.config({paths:{vs:'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs'}});
+    require(['vs/editor/editor.main'],function(){
+      monaco.editor.create(document.getElementById('editor'),{
+        value:CODE,language:'c',theme:'vs-dark',readOnly:true,automaticLayout:true,
+        fontSize:14,lineNumbers:'on',minimap:{enabled:true},scrollBeyondLastLine:false,
+        padding:{top:16,bottom:16},folding:true,bracketPairColorization:{enabled:true}
+      });
+    });
+    function copyCode(){
+      navigator.clipboard.writeText(CODE).then(()=>{
+        document.getElementById('copyBtn').classList.add('copied');
+        document.getElementById('copyText').textContent='Copied!';
+        showToast('Copied!');
+        setTimeout(()=>{document.getElementById('copyBtn').classList.remove('copied');document.getElementById('copyText').textContent='Copy';},2000);
+      });
+    }
+    function downloadCode(){
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([CODE],{type:'text/plain'}));
+      a.download=FILENAME;a.click();
+      showToast('Download started!');
+    }
+    function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
+  </script>
+</body>
+</html>
