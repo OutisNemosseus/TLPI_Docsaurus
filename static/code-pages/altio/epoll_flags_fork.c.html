@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>epoll_flags_fork.c - TLPI</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1e1e1e;color:#d4d4d4;min-height:100vh}
+    .header{background:#252526;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #3c3c3c;flex-wrap:wrap;gap:12px}
+    .file-info{display:flex;flex-direction:column;gap:4px}
+    .filename{font-size:1.25rem;font-weight:600;color:#fff}
+    .category{font-size:0.875rem;color:#808080}
+    .file-type{display:inline-block;padding:2px 8px;background:#555555;color:#fff;border-radius:4px;font-size:0.75rem;font-weight:600;margin-left:8px}
+    .actions{display:flex;gap:12px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:none;border-radius:6px;font-size:0.875rem;font-weight:500;cursor:pointer;transition:all 0.2s}
+    .btn-copy{background:#0e639c;color:#fff}
+    .btn-copy:hover{background:#1177bb}
+    .btn-copy.copied{background:#16825d}
+    .btn-download{background:#10b981;color:#fff}
+    .btn-download:hover{background:#059669}
+    .btn svg{width:16px;height:16px}
+    #editor{height:calc(100vh - 80px)}
+    .toast{position:fixed;bottom:24px;right:24px;background:#16825d;color:#fff;padding:12px 24px;border-radius:8px;font-size:0.875rem;opacity:0;transform:translateY(20px);transition:all 0.3s;z-index:1000}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .lines{font-size:0.75rem;color:#6b7280;margin-top:4px}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="file-info">
+      <div class="filename">epoll_flags_fork.c<span class="file-type">C Source</span></div>
+      <div class="category">altio</div>
+      <div class="lines" id="lines"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-copy" id="copyBtn" onclick="copyCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        <span id="copyText">Copy</span>
+      </button>
+      <button class="btn btn-download" onclick="downloadCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        <span>Download</span>
+      </button>
+    </div>
+  </div>
+  <div id="editor"></div>
+  <div class="toast" id="toast"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+  <script>
+    const CODE=`/*************************************************************************\\
+*                  Copyright (C) Michael Kerrisk, 2025.                   *
+*                                                                         *
+* This program is free software. You may use, modify, and redistribute it *
+* under the terms of the GNU General Public License as published by the   *
+* Free Software Foundation, either version 3 or (at your option) any      *
+* later version. This program is distributed without any warranty.  See   *
+* the file COPYING.gpl-v3 for details.                                    *
+\\*************************************************************************/
+
+/* Supplementary program for Chapter 63 */
+
+/* epoll_flags_fork.c
+
+   A program to experiment with various epoll flags, in particular EPOLLET
+   and EPOLLEXCLUSIVE.
+
+   Usage: ./epoll_flags_fork [options] <FIFO> <num-children>
+
+   Example usage, in this case to experiment with EPOLLEXCLUSIVE where five
+   child processes each create their own epoll FD to which they all add the
+   file descriptor for the read end of a FIFO:
+
+        mkfifo p
+        ./epoll_flags_fork -x p 5
+
+   and then in another window, run the following command and type lines of
+   input:
+
+        cat > p
+
+   To explore the difference when not using EPOLLEXCLUSIVE, repeat the
+   above but run the program without the '-x' option:
+
+        ./epoll_flags_fork p 5
+
+   To explore the behavior where EPOLLET wakes up only one of multiple
+   waiters on the same epoll FD, use the '-e' and '-s' options:
+
+        ./epoll_flags_fork -es p 5
+*/
+#include <sys/epoll.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <errno.h>
+#include <unistd.h>
+#include <string.h>
+
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \\
+                        } while (0)
+
+#ifndef EPOLLEXCLUSIVE
+#define EPOLLEXCLUSIVE (1 << 28)
+#endif
+
+static void
+usageError(char *pname)
+{
+    fprintf(stderr, "Usage: %s [-1eoprx] <FIFO> <num-children>\\n",
+            pname);
+    fprintf(stderr, "\\t-s       Create one epoll FD before creating child "
+            "processes\\n");
+    fprintf(stderr, "\\t\\t(By default, each child creates its own epoll FD "
+            "after fork())\\n");
+    fprintf(stderr, "\\t-e       Include EPOLLET flag\\n");
+    fprintf(stderr, "\\t-x       Include EPOLLEXCLUSIVE flag\\n");
+    fprintf(stderr, "\\t-o       Include EPOLLONESHOT flag\\n");
+    fprintf(stderr, "\\t-p       Open FIFO individually in each child\\n");
+    fprintf(stderr, "\\t\\t(By default, each child inherits FD for FIFO opened "
+            "by parent)\\n");
+    fprintf(stderr, "\\t-r       Do a read() after epoll_wait() returns\\n");
+    fprintf(stderr, "\\t-l       Children should loop, rather than "
+            "calling epoll_wait() just once\\n");
+    exit(EXIT_FAILURE);
+}
+
+struct cmdLineArgs {
+    bool useOneEpollFD;
+    bool readData;
+    int eventsMask;
+    bool openFifoInChild;
+    bool useLoop;
+    char *fifoPath;
+};
+
+static void
+child(int childNum, int epfd, int fd, struct cmdLineArgs *args)
+{
+    /* If the FIFO was not opened in the parent, open it in the child */
+
+    if (args->openFifoInChild) {
+        fd = open(args->fifoPath, O_RDONLY | O_NONBLOCK);
+        if (fd == -1)
+            errExit("open");
+        printf("Child %d: opened FIFO %s\\n", childNum, args->fifoPath);
+    }
+
+    if (!args->useOneEpollFD) {
+        printf("Child %d: creating epoll FD and adding FIFO\\n", childNum);
+
+        epfd = epoll_create(2);
+        if (epfd == -1)
+            errExit("epoll_create");
+
+        struct epoll_event ev;
+        ev.events = args->eventsMask;
+        if (epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ev) == -1)
+            errExit("epoll_ctl");
+    }
+
+    do {
+        /* Wait on the epoll FD and print results */
+
+        printf("Child %d: about to epoll_wait()\\n", childNum);
+        struct epoll_event rev;
+        int numReady = epoll_wait(epfd, &rev, 1, -1);
+        if (numReady == -1)
+            errExit("epoll-wait");
+        printf("Child %d: epoll_wait() returned %d\\n", childNum, numReady);
+
+        /* If specified on command line, read data when the FIFO
+           becomes ready */
+
+        if (args->readData) {
+            char buf[50000];
+
+            usleep(50000);
+            ssize_t nr = read(fd, buf, sizeof(buf));
+            if (nr == 0) {
+                printf("Child %d: read returned EOF\\n", childNum);
+                break;
+            } else if (nr > 0) {
+                printf("Child %d: read returned %zd bytes\\n", childNum, nr);
+            } else {
+                printf("Child %d: read failed: %s\\n", childNum,
+                        strerror(errno));
+            }
+        }
+    } while (args->useLoop);
+}
+
+int
+main(int argc, char *argv[])
+{
+    /* Parse command-line options and arguments */
+
+    struct cmdLineArgs args;
+
+    args.useOneEpollFD = false;
+    args.readData = false;
+    args.eventsMask = EPOLLIN;
+    args.openFifoInChild = false;
+    args.useLoop = false;
+    int opt;
+    while ((opt = getopt(argc, argv, "eloprsx")) != -1) {
+        switch (opt) {
+        case 'e': args.eventsMask |= EPOLLET;           break;
+        case 'o': args.eventsMask |= EPOLLONESHOT;      break;
+        case 'x': args.eventsMask |= EPOLLEXCLUSIVE;    break;
+        case 'l': args.useLoop = true;                  break;
+        case 'p': args.openFifoInChild = true;          break;
+        case 'r': args.readData = true;                 break;
+        case 's': args.useOneEpollFD = true;            break;
+        default:  usageError(argv[0]);
+        }
+    }
+
+    if (argc != optind + 2 || strcmp(argv[optind], "--help") == 0)
+        usageError(argv[0]);
+
+    args.fifoPath = argv[optind];
+    int childMax = atoi(argv[optind + 1]);
+
+    /* Either we open the FIFO once in the parent (and each child inherits
+       the file descriptor from the parent, or each child opens the FIFO
+       after fork() */
+
+    int fd;
+    if (!args.openFifoInChild) {
+        fd = open(args.fifoPath, O_RDONLY | O_NONBLOCK);
+        if (fd == -1)
+            errExit("open");
+        printf("Opened FIFO %s\\n", args.fifoPath);
+    }
+
+    /* Either we create the epoll FD once in the parent (and it is inherited by
+       each child) and add the FIFO to the interest list of the epoll instance,
+       or we perform these steps in each of the children after fork() */
+
+    int epfd;
+    struct epoll_event ev;
+    if (args.useOneEpollFD) {
+        printf("Creating single epoll FD and adding FIFO\\n");
+        epfd = epoll_create(2);
+        if (epfd == -1)
+            errExit("epoll_create");
+
+        ev.events = args.eventsMask;
+        if (epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ev) == -1)
+            errExit("epoll_ctl");
+    }
+
+    printf("\\n");
+
+    /* Create child processes */
+
+    for (int childNum = 0; childNum < childMax; childNum++) {
+        switch (fork()) {
+        case -1:
+            errExit("fork");
+
+        case 0: /* Child */
+            printf("Child %d: created\\n", childNum);
+            child(childNum, epfd, fd, &args);
+
+            printf("Child %d: terminating\\n", childNum);
+            exit(EXIT_SUCCESS);
+
+        default:
+            break;
+        }
+    }
+
+    usleep(50000);
+    printf("======================\\n");
+
+    for (int childNum = 0; childNum < childMax; childNum++)
+        wait(NULL);
+
+    exit(EXIT_SUCCESS);
+}
+`;
+    const FILENAME='epoll_flags_fork.c';
+    document.getElementById('lines').textContent=CODE.split('\n').length+' lines';
+    require.config({paths:{vs:'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs'}});
+    require(['vs/editor/editor.main'],function(){
+      monaco.editor.create(document.getElementById('editor'),{
+        value:CODE,language:'c',theme:'vs-dark',readOnly:true,automaticLayout:true,
+        fontSize:14,lineNumbers:'on',minimap:{enabled:true},scrollBeyondLastLine:false,
+        padding:{top:16,bottom:16},folding:true,bracketPairColorization:{enabled:true}
+      });
+    });
+    function copyCode(){
+      navigator.clipboard.writeText(CODE).then(()=>{
+        document.getElementById('copyBtn').classList.add('copied');
+        document.getElementById('copyText').textContent='Copied!';
+        showToast('Copied!');
+        setTimeout(()=>{document.getElementById('copyBtn').classList.remove('copied');document.getElementById('copyText').textContent='Copy';},2000);
+      });
+    }
+    function downloadCode(){
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([CODE],{type:'text/plain'}));
+      a.download=FILENAME;a.click();
+      showToast('Download started!');
+    }
+    function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
+  </script>
+</body>
+</html>

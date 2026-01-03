@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>alloc_mem.c - TLPI</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1e1e1e;color:#d4d4d4;min-height:100vh}
+    .header{background:#252526;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #3c3c3c;flex-wrap:wrap;gap:12px}
+    .file-info{display:flex;flex-direction:column;gap:4px}
+    .filename{font-size:1.25rem;font-weight:600;color:#fff}
+    .category{font-size:0.875rem;color:#808080}
+    .file-type{display:inline-block;padding:2px 8px;background:#555555;color:#fff;border-radius:4px;font-size:0.75rem;font-weight:600;margin-left:8px}
+    .actions{display:flex;gap:12px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:none;border-radius:6px;font-size:0.875rem;font-weight:500;cursor:pointer;transition:all 0.2s}
+    .btn-copy{background:#0e639c;color:#fff}
+    .btn-copy:hover{background:#1177bb}
+    .btn-copy.copied{background:#16825d}
+    .btn-download{background:#10b981;color:#fff}
+    .btn-download:hover{background:#059669}
+    .btn svg{width:16px;height:16px}
+    #editor{height:calc(100vh - 80px)}
+    .toast{position:fixed;bottom:24px;right:24px;background:#16825d;color:#fff;padding:12px 24px;border-radius:8px;font-size:0.875rem;opacity:0;transform:translateY(20px);transition:all 0.3s;z-index:1000}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .lines{font-size:0.75rem;color:#6b7280;margin-top:4px}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="file-info">
+      <div class="filename">alloc_mem.c<span class="file-type">C Source</span></div>
+      <div class="category">cgroups</div>
+      <div class="lines" id="lines"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-copy" id="copyBtn" onclick="copyCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        <span id="copyText">Copy</span>
+      </button>
+      <button class="btn btn-download" onclick="downloadCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        <span>Download</span>
+      </button>
+    </div>
+  </div>
+  <div id="editor"></div>
+  <div class="toast" id="toast"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+  <script>
+    const CODE=`/*************************************************************************\\
+*                  Copyright (C) Michael Kerrisk, 2025.                   *
+*                                                                         *
+* This program is free software. You may use, modify, and redistribute it *
+* under the terms of the GNU General Public License as published by the   *
+* Free Software Foundation, either version 3 or (at your option) any      *
+* later version. This program is distributed without any warranty.  See   *
+* the file COPYING.gpl-v3 for details.                                    *
+\\*************************************************************************/
+
+/* Supplementary program for Chapter Z */
+
+/* alloc_mem.c
+
+  Allocate blocks of memory, as specified by command-line arguments. This
+  program is useful for small experiments with the 'memory' cgroup controller.
+*/
+#define _GNU_SOURCE
+#include <pthread.h>
+#include <sys/syscall.h>
+#include "tlpi_hdr.h"
+
+static size_t blockSize;
+static int sleepUsecs, numAllocs, numThreads;
+
+static void
+allocMem(int numAllocs, size_t blockSize, int sleepUsecs)
+{
+    if (numThreads > 1) {
+
+        /* If we have created multiple threads, then pause until the user hits
+           <enter>.  This gives the user a chance to split the threads across
+           multiple (v1) memory cgroups that have different memory limits,
+           making it possible to see how the kernel enforces the limit(s).
+           Some light experimentation suggests that only the limit on the
+           thread group leader is enforced. (Note that such an experiment
+           can't be performed in cgroups v2, where, from the perspective
+           of domain controllers such as the memory controller, all of the
+           threads in a multithreaded process are always part of the same
+           cgroup.) */
+
+        char ch;
+        printf("Hit ENTER when ready to start memory allocation "
+                "(PID = %ld; TID = %ld)\\n", (long) getpid(),
+                syscall(SYS_gettid));
+        read(STDIN_FILENO, &ch, 1);
+    }
+
+    size_t totalMem = 0;
+
+    for (int j = 0; (numAllocs == -1) || (j < numAllocs); j++) {
+        char *p = malloc(blockSize);
+        if (p == NULL)
+            errExit("malloc %d", j);
+
+        /* Make sure virtual memory is actually allocated by touching
+           every page */
+
+        for (int k = 0; k < blockSize; k += 1024)
+            p[k] = 0;
+
+        totalMem += blockSize;
+        printf("%4d: address = %p; total = 0x%zx (%zd MiB)\\n",
+                j, p, totalMem, totalMem / (1024 * 1024));
+
+        /* If the user requested, slow things down by sleeping
+           for some microseconds between each allocation */
+
+        if (sleepUsecs != 0)
+            usleep(sleepUsecs);
+    }
+
+    /* Pause, so that we hold onto allocated memory */
+
+    printf("All memory allocated; pausing\\n");
+    pause();
+}
+
+static void *
+threadFunc(void *arg)
+{
+    int doAlloc = (long) arg;
+
+    if (doAlloc)
+        allocMem(numAllocs, blockSize, sleepUsecs);
+
+    pause();
+    return NULL;
+}
+
+static void
+usageError(char *pname)
+{
+    fprintf(stderr, "Usage: %s block-size num-allocs [sleep-usecs "
+            "[tflag...]]\\n\\n", pname);
+    fprintf(stderr, "Allocate 'num-allocs' blocks of memory of size "
+            "'block-size' bytes.\\n\\n");
+    fprintf(stderr, "The optional 'sleep-usecs' (default: 0) specifies a "
+            "number of microseconds to\\n");
+    fprintf(stderr, "sleep between each allocation.\\n\\n");
+    fprintf(stderr, "One additional thread is created for each 'tflag' "
+            "argument\\n\\n");
+    fprintf(stderr, "'tflag' is either '+' or '.'. At most one 'tflag' can be "
+            "'+', and memory\\n"
+            "         allocation is done in that thread, or otherwise in the "
+            "main thread\\n"
+            "         if no 'tflag' was '+'.\\n");
+    exit(EXIT_FAILURE);
+}
+
+int
+main(int argc, char *argv[])
+{
+    bool allocated = false;
+
+    if (argc < 3)
+        usageError(argv[0]);
+
+    blockSize = strtol(argv[1], NULL, 0);
+    numAllocs = strtol(argv[2], NULL, 0);
+    sleepUsecs = (argc > 3) ? atoi(argv[3]) : 0;
+
+    numThreads = argc - 4;
+
+    if (argc > 4) {
+
+        /* If the user requested the creation of additional threads, then
+           create those threads. */
+
+        for (int j = 4; j < argc; j++) {
+            pthread_t thr;
+            long doAlloc;
+
+            doAlloc = argv[j][0] == '+';
+            if (doAlloc && allocated)
+                fatal("Can only specify one '+' argument");
+
+            int s = pthread_create(&thr, NULL, threadFunc, (void *) doAlloc);
+            if (s != 0)
+                errExitEN(s, "pthread_create");
+
+            if (doAlloc)
+                allocated = true;
+        }
+
+        printf("All threads created\\n");
+    }
+
+    if ( ! allocated)
+        allocMem(numAllocs, blockSize, sleepUsecs);
+
+    pause();
+    exit(EXIT_SUCCESS);
+}
+`;
+    const FILENAME='alloc_mem.c';
+    document.getElementById('lines').textContent=CODE.split('\n').length+' lines';
+    require.config({paths:{vs:'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs'}});
+    require(['vs/editor/editor.main'],function(){
+      monaco.editor.create(document.getElementById('editor'),{
+        value:CODE,language:'c',theme:'vs-dark',readOnly:true,automaticLayout:true,
+        fontSize:14,lineNumbers:'on',minimap:{enabled:true},scrollBeyondLastLine:false,
+        padding:{top:16,bottom:16},folding:true,bracketPairColorization:{enabled:true}
+      });
+    });
+    function copyCode(){
+      navigator.clipboard.writeText(CODE).then(()=>{
+        document.getElementById('copyBtn').classList.add('copied');
+        document.getElementById('copyText').textContent='Copied!';
+        showToast('Copied!');
+        setTimeout(()=>{document.getElementById('copyBtn').classList.remove('copied');document.getElementById('copyText').textContent='Copy';},2000);
+      });
+    }
+    function downloadCode(){
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([CODE],{type:'text/plain'}));
+      a.download=FILENAME;a.click();
+      showToast('Download started!');
+    }
+    function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
+  </script>
+</body>
+</html>

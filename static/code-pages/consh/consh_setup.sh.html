@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>consh_setup.sh - TLPI</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1e1e1e;color:#d4d4d4;min-height:100vh}
+    .header{background:#252526;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #3c3c3c;flex-wrap:wrap;gap:12px}
+    .file-info{display:flex;flex-direction:column;gap:4px}
+    .filename{font-size:1.25rem;font-weight:600;color:#fff}
+    .category{font-size:0.875rem;color:#808080}
+    .file-type{display:inline-block;padding:2px 8px;background:#4eaa25;color:#fff;border-radius:4px;font-size:0.75rem;font-weight:600;margin-left:8px}
+    .actions{display:flex;gap:12px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:none;border-radius:6px;font-size:0.875rem;font-weight:500;cursor:pointer;transition:all 0.2s}
+    .btn-copy{background:#0e639c;color:#fff}
+    .btn-copy:hover{background:#1177bb}
+    .btn-copy.copied{background:#16825d}
+    .btn-download{background:#10b981;color:#fff}
+    .btn-download:hover{background:#059669}
+    .btn svg{width:16px;height:16px}
+    #editor{height:calc(100vh - 80px)}
+    .toast{position:fixed;bottom:24px;right:24px;background:#16825d;color:#fff;padding:12px 24px;border-radius:8px;font-size:0.875rem;opacity:0;transform:translateY(20px);transition:all 0.3s;z-index:1000}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .lines{font-size:0.75rem;color:#6b7280;margin-top:4px}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="file-info">
+      <div class="filename">consh_setup.sh<span class="file-type">Shell Script</span></div>
+      <div class="category">consh</div>
+      <div class="lines" id="lines"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-copy" id="copyBtn" onclick="copyCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        <span id="copyText">Copy</span>
+      </button>
+      <button class="btn btn-download" onclick="downloadCode()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        <span>Download</span>
+      </button>
+    </div>
+  </div>
+  <div id="editor"></div>
+  <div class="toast" id="toast"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+  <script>
+    const CODE=`#!/bin/sh
+#
+# consh_setup.sh
+#
+# (C) 2025, Michael Kerrisk
+#
+# Licensed under the GNU General Public License version 2 or later
+
+usage()
+{
+cat << EOF 1>&2
+
+Usage: \$0 [options] <lower-dir> <overlay-dir>
+
+<lower-dir> is the pathname of an existing directory that will be used as the
+        lower layer in the OverlayFS union mount for the container.
+<overlay-dir> is the pathname that will be used create a new directory where
+	the other pieces (upper, work, merged) of the OverlayFS union mount
+	for the container will be set up. The overlay mount will be created
+	at '<overlay-dir>/merged'
+
+Options are as follows:
+    -c <cgroup>
+	Can be used specify the pathname of a cgroup into which the container
+	should be placed. The pathname is interpreted relative to the cgroup
+	root directory, and the cgroup is created if it does not already exist.
+    -p <cgroup-parent-path>
+	Can be used to specify the cgroup parent under which <cgroup> is
+	created.
+    -h <hostname>
+	Can be used to specify the hostname that will be used in the container.
+EOF
+    exit 1
+}
+
+# Command-line option parsing
+
+cgroup=""
+host="consh-host"
+export VERBOSE=""
+while getopts ":c:h:p:v" optname "\$@"; do
+    case "\$optname" in
+    c)  cgroup=\$OPTARG
+        ;;
+    h)  host=\$OPTARG
+        ;;
+    p)  cgroup_parent=\$OPTARG
+        ;;
+    v)  VERBOSE="x"
+        ;;
+    *)  echo "Unknown option: \$OPTARG" 1>&2
+	usage
+        ;;
+    esac
+done
+
+shift \$(expr \$OPTIND - 1)
+
+if [ \$# -lt 2 ] ; then
+    echo "Missing arguments" 1>&2
+    usage
+fi
+
+lower=\$1
+ovly_dir=\$2
+
+if ! [ -e \$lower ] ; then
+    echo "Error: '\$lower' does not exist!" 1>&2
+    exit 1
+fi
+
+# A check so that during demos I don't forget to make a tmpfs mount
+# when doing container-in-a-container demos. (OverlayFS doesn't allow
+# the 'upper' layer in a mount to itself be an OverlayFS mount.)
+
+if df -T \$lower | grep -q overlay || \\
+       df -T \$(dirname \$ovly_dir) | grep -q overlay; then
+    cat 1>&2 << EOF
+It looks like you might be trying to run a container inside a container.
+You should start over again, first creating a tmpfs mount for the inner
+container's overlay filesystem. Bye!
+EOF
+    exit 1
+fi
+
+# If a cgroup was specified, create that cgroup and move this shell into the
+# cgroup.
+
+# If 'cgroup_parent' was explicitly specified, then we will create the cgroup
+# under that parent cgroup. If the parent was not specified, we use a default.
+# On a systemd-based system, we should be able to create the cgroup under
+# /sys/fs/cgroup/user.slice/user-\$(id -u).slice/user@\$(id -u).service/, which
+# is a cgroup that has been delegated to this user. (Here, "delegated" means
+# that the ownership of the cgroup has been changed to this user's ID, with
+# the result that this user can manage this subtree of the cgroup hierarchy.)
+# If that cgroup path is not present, then we'll try /sys/fs/cgroup.
+#
+
+if [ "X\$cgroup" != "X" ] ; then
+    if [ "X\$cgroup_parent" = "X" ] ; then
+        cg_mount="/sys/fs/cgroup"
+	uslice="\$cg_mount/user.slice/user-\$(id -u).slice/user@\$(id -u).service"
+        if [ -O \$uslice ] ; then
+	    cgroup_parent=\$uslice
+	elif [ -O \$cg_mount ] ; then
+	    cgroup_parent=\$cg_mount
+	else
+	    echo 1>&2 "\$cgroup_parent is not owned by \$USER"
+	    exit 1
+	fi
+    fi
+
+    cgpath="\$cgroup_parent/\$cgroup"
+    if [ -n "\$VERBOSE" ] ; then
+        echo "Creating cgroup: \$cgpath"
+    fi
+
+    mkdir -p \$cgpath
+
+    sh -c "echo \$\$ > \$cgpath/cgroup.procs"
+fi
+
+# We use unshare(1) to launch a shell in new namespaces. Some points deserve
+# explanation:
+#
+# - We use busybox to launch the shell. This ensures that (a) the shell is
+#   statically linked (and thus has no external shared library dependencies),
+#   and (b) we are running the same shell as would be run by using 'sh' inside
+#   the "container".
+#
+# - We set the ENV environment to point to a script that will be executed as
+#   a start-up script by the new shell. This script performs the set-up steps
+#   that are required after the namespaces have been created.
+#
+# - We use the --fork option to ensure that a child process is created.
+#   That child will have PID in the new PID namespace.
+#
+# - One blemish in this set-up is that the "unshare" parent process will
+#   also be in the cgroup. I can see no tidy way to avoid this (at least
+#   not if we want to run an interactive shell in the container and we use the
+#   standard unshare(1) command to do the set-up). Consequently, the only way
+#   to remove the parent process from the cgroup would be via a manual step
+#   in a separate terminal window.
+#
+# - We use the shell 'exec' built-in, so that the shell executing this script
+#   is replaced by the "unshare" executable. This allows us to avoid the
+#   creation of yet another process that would be a member of the cgroup.
+#
+if [ -n "\$VERBOSE" ] ; then
+    echo "Using 'unshare' to launch a shell in new namespaces"
+fi
+
+exec env -i HOME="/root" PATH="/usr/sbin:/usr/bin:/sbin:/bin" \\
+	    HOSTNAME="\$host" \\
+	    LOWER="\$lower" \\
+	    OVLY_DIR="\$ovly_dir" \\
+	    VERBOSE="\$VERBOSE" \\
+	    ENV=\$(dirname \$0)/consh_post_setup.sh \\
+	unshare --user --map-root-user --pid --fork \\
+	        --mount --net --ipc --uts --cgroup \\
+            busybox sh
+`;
+    const FILENAME='consh_setup.sh';
+    document.getElementById('lines').textContent=CODE.split('\n').length+' lines';
+    require.config({paths:{vs:'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs'}});
+    require(['vs/editor/editor.main'],function(){
+      monaco.editor.create(document.getElementById('editor'),{
+        value:CODE,language:'shell',theme:'vs-dark',readOnly:true,automaticLayout:true,
+        fontSize:14,lineNumbers:'on',minimap:{enabled:true},scrollBeyondLastLine:false,
+        padding:{top:16,bottom:16},folding:true,bracketPairColorization:{enabled:true}
+      });
+    });
+    function copyCode(){
+      navigator.clipboard.writeText(CODE).then(()=>{
+        document.getElementById('copyBtn').classList.add('copied');
+        document.getElementById('copyText').textContent='Copied!';
+        showToast('Copied!');
+        setTimeout(()=>{document.getElementById('copyBtn').classList.remove('copied');document.getElementById('copyText').textContent='Copy';},2000);
+      });
+    }
+    function downloadCode(){
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([CODE],{type:'text/plain'}));
+      a.download=FILENAME;a.click();
+      showToast('Download started!');
+    }
+    function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
+  </script>
+</body>
+</html>
