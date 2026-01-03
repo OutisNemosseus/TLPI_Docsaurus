@@ -9,8 +9,8 @@ const config = {
   tagline: 'Source code examples with Monaco Editor',
   favicon: 'img/favicon.ico',
 
-  url: 'https://outisnemoesseus.github.io',
-  baseUrl: '/TLPI_Docsaurus/',
+  url: 'https://tlpi-docsaurus.onrender.com',
+  baseUrl: '/',
 
   organizationName: 'OutisNemosseus',
   projectName: 'TLPI_Docsaurus',
