@@ -59,7 +59,7 @@ function findFiles(dir, baseDir) {
             fullPath,
             filename: item,
             ext,
-            category: relDir || 'lib',
+            category: (relDir || 'lib').replace(/\\/g, '/'),
             slug: item.replace(/\./g, '-').toLowerCase()
           });
         }

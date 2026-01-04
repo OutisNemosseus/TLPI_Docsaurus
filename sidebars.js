@@ -495,53 +495,53 @@ const sidebars = {
           },
           {
                 'type': 'category',
-                'label': 'Shlibs\\demo Bsymbolic',
+                'label': 'Shlibs/demo Bsymbolic',
                 'items': [
-                      'shlibs\\demo_Bsymbolic/build-sh',
-                      'shlibs\\demo_Bsymbolic/foo1-c',
-                      'shlibs\\demo_Bsymbolic/foo2-c',
-                      'shlibs\\demo_Bsymbolic/foo3-c',
-                      'shlibs\\demo_Bsymbolic/prog-c'
+                      'shlibs/demo_Bsymbolic/build-sh',
+                      'shlibs/demo_Bsymbolic/foo1-c',
+                      'shlibs/demo_Bsymbolic/foo2-c',
+                      'shlibs/demo_Bsymbolic/foo3-c',
+                      'shlibs/demo_Bsymbolic/prog-c'
                 ]
           },
           {
                 'type': 'category',
-                'label': 'Shlibs\\rpath demo',
+                'label': 'Shlibs/rpath demo',
                 'items': [
-                      'shlibs\\rpath_demo/build-rpath-link-sh',
-                      'shlibs\\rpath_demo/build-sh',
-                      'shlibs\\rpath_demo/prog-c'
+                      'shlibs/rpath_demo/build-rpath-link-sh',
+                      'shlibs/rpath_demo/build-sh',
+                      'shlibs/rpath_demo/prog-c'
                 ]
           },
           {
                 'type': 'category',
-                'label': 'Shlibs\\rpath demo\\d1',
+                'label': 'Shlibs/rpath demo/d1',
                 'items': [
-                      'shlibs\\rpath_demo\\d1/modx1-c'
+                      'shlibs/rpath_demo/d1/modx1-c'
                 ]
           },
           {
                 'type': 'category',
-                'label': 'Shlibs\\rpath demo\\d2',
+                'label': 'Shlibs/rpath demo/d2',
                 'items': [
-                      'shlibs\\rpath_demo\\d2/modx2-c'
+                      'shlibs/rpath_demo/d2/modx2-c'
                 ]
           },
           {
                 'type': 'category',
-                'label': 'Shlibs\\version scripts',
+                'label': 'Shlibs/version scripts',
                 'items': [
-                      'shlibs\\version_scripts/sv_build-sh',
-                      'shlibs\\version_scripts/sv_lib_v1-c',
-                      'shlibs\\version_scripts/sv_lib_v2-c',
-                      'shlibs\\version_scripts/sv_libabc-c',
-                      'shlibs\\version_scripts/sv_prog_abc-c',
-                      'shlibs\\version_scripts/sv_prog_complex-c',
-                      'shlibs\\version_scripts/sv_prog-c',
-                      'shlibs\\version_scripts/vis_build-sh',
-                      'shlibs\\version_scripts/vis_comm-c',
-                      'shlibs\\version_scripts/vis_f1-c',
-                      'shlibs\\version_scripts/vis_f2-c'
+                      'shlibs/version_scripts/sv_build-sh',
+                      'shlibs/version_scripts/sv_lib_v1-c',
+                      'shlibs/version_scripts/sv_lib_v2-c',
+                      'shlibs/version_scripts/sv_libabc-c',
+                      'shlibs/version_scripts/sv_prog_abc-c',
+                      'shlibs/version_scripts/sv_prog_complex-c',
+                      'shlibs/version_scripts/sv_prog-c',
+                      'shlibs/version_scripts/vis_build-sh',
+                      'shlibs/version_scripts/vis_comm-c',
+                      'shlibs/version_scripts/vis_f1-c',
+                      'shlibs/version_scripts/vis_f2-c'
                 ]
           },
           {

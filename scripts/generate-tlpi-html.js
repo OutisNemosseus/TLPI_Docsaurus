@@ -202,7 +202,7 @@ function findFiles(dir, baseDir) {
         const ext = path.extname(item).toLowerCase();
         if (FILE_TYPES[ext]) {
           const relDir = path.relative(baseDir, dir);
-          files.push({ fullPath: fullPath, filename: item, ext: ext, category: relDir || 'root' });
+          files.push({ fullPath: fullPath, filename: item, ext: ext, category: (relDir || 'root').replace(/\\/g, '/') });
         }
       }
     }

@@ -4,7 +4,17 @@
       "Bash(ls:*)",
       "Bash(git init:*)",
       "Bash(git remote add:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(find:*)",
+      "Bash(node -e:*)",
+      "Bash(node generate-tlpi-html.js:*)",
+      "Bash(node scripts/generate-tlpi-html.js:*)",
+      "Bash(git rm:*)",
+      "Bash(node scripts/generate-docs.js:*)",
+      "Bash(npm run generate-html:*)"
     ]
   }
 }
