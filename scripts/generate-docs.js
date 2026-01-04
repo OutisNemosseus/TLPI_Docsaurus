@@ -102,6 +102,18 @@ const sidebars = {
     'intro',
     {
       type: 'category',
+      label: 'Scripts Documentation',
+      collapsed: false,
+      items: [
+        'scripts/index',
+        'scripts/generate-docs',
+        'scripts/generate-tlpi-html',
+        'scripts/inbox-guide',
+        'scripts/troubleshooting',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Source Code',
       collapsed: false,
       items: ${JSON.stringify(sidebarItems, null, 6).replace(/"/g, "'").replace(/\n/g, '\n    ')}

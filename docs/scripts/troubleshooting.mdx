@@ -1,0 +1,322 @@
+---
+sidebar_label: "Troubleshooting"
+sidebar_position: 5
+title: "Troubleshooting Guide"
+description: "Common issues and solutions for TLPI Docusaurus build scripts"
+---
+
+# Troubleshooting Guide
+
+This guide covers common issues you might encounter when using the TLPI Docusaurus build scripts.
+
+## Build Errors
+
+### YAML Parsing Error: Unknown Escape Sequence
+
+**Error Message:**
+```
+YAMLException: unknown escape sequence at line 4, column 40:
+    description: "Shell Script from shlibs\demo_Bsymbolic"
+                                           ^
+```
+
+**Cause:** Windows backslashes in paths are interpreted as escape sequences in YAML.
+
+**Solution:** The scripts now automatically normalize paths. If you see this error:
+1. Ensure you're using the latest version of `generate-docs.js`
+2. Check that paths use forward slashes: `shlibs/demo_Bsymbolic`
+
+**Fix in script:**
+```javascript
+category: (relDir || 'lib').replace(/\\/g, '/')
+```
+
+---
+
+### Broken Links Warning
+
+**Warning Message:**
+```
+- Broken link on source page path = /docs/lib/alt_functions-c:
+   -> linking to /code-pages/index.html
+```
+
+**Cause:** Docusaurus validates internal links, but static files in `static/` aren't tracked.
+
+**Impact:** None - the site works correctly. This is just a warning.
+
+**Solution (optional):** Suppress warnings in `docusaurus.config.js`:
+```javascript
+onBrokenLinks: 'warn',  // or 'ignore'
+```
+
+---
+
+### Module Not Found
+
+**Error Message:**
+```
+Error: Cannot find module 'fs'
+```
+
+**Cause:** Running the script in a browser environment or with wrong Node.js setup.
+
+**Solution:**
+```bash
+# Ensure you're running with Node.js
+node --version  # Should show v18+ or v20+
+
+# Run the script directly
+node scripts/generate-docs.js
+```
+
+---
+
+## Generation Issues
+
+### No Files Generated
+
+**Symptom:** Script runs but generates 0 files.
+
+**Possible Causes:**
+
+1. **Empty source directory:**
+   ```bash
+   ls tlpi-dist/
+   # Should show subdirectories with .c, .h, .sh files
+   ```
+
+2. **Wrong working directory:**
+   ```bash
+   pwd
+   # Should be in project root
+
+   # Run from project root:
+   cd /path/to/tlpi-docusaurus
+   node scripts/generate-docs.js
+   ```
+
+3. **No supported file types:**
+   Only `.c`, `.h`, and `.sh` files are processed.
+
+---
+
+### Sidebar Not Updating
+
+**Symptom:** New files don't appear in the sidebar.
+
+**Solution:**
+1. Run the generator: `node scripts/generate-docs.js`
+2. Check `sidebars.js` was updated
+3. Restart dev server: `npm start`
+
+**Note:** The dev server may cache the sidebar. A full restart usually fixes this.
+
+---
+
+### Monaco Editor Not Loading
+
+**Symptom:** "Loading Monaco Editor..." message stays forever.
+
+**Possible Causes:**
+
+1. **CDN blocked:**
+   - Check browser console for network errors
+   - Verify access to `cdnjs.cloudflare.com`
+
+2. **JavaScript disabled:**
+   - Monaco requires JavaScript to function
+
+3. **Browser compatibility:**
+   - Use a modern browser (Chrome, Firefox, Safari, Edge)
+
+**Debug Steps:**
+```javascript
+// Open browser console (F12) and check for errors
+// Common errors:
+// - 404 on Monaco CDN files
+// - CORS issues
+// - Syntax errors in generated code
+```
+
+---
+
+### Special Characters Breaking Code View
+
+**Symptom:** Code doesn't display correctly or shows escape sequences.
+
+**Cause:** Special characters in source files not properly escaped.
+
+**Characters that need escaping:**
+- Backticks (`)
+- Dollar signs ($)
+- Backslashes (\)
+
+**The script handles this:**
+```javascript
+function escapeForJS(str) {
+  return str
+    .replace(/\\/g, '\\\\')
+    .replace(/`/g, '\\`')
+    .replace(/\$/g, '\\$');
+}
+```
+
+**If still having issues:**
+1. Check the source file for unusual characters
+2. Verify the generated HTML file manually
+
+---
+
+## Inbox Issues
+
+### File Not Matched
+
+**Symptom:** `Skipped: myfile.md (no matching folder found)`
+
+**Debug Steps:**
+
+1. **Check exact folder names:**
+   ```bash
+   ls docs/lib/ | grep -i "your_filename"
+   ```
+
+2. **Verify naming convention:**
+   - Inbox: `alt_functions.md`
+   - Matches: `alt_functions-c/`, `alt_functions-h/`
+
+3. **Case sensitivity:**
+   - On Linux/Mac, case matters
+   - `Alt_Functions.md` won't match `alt_functions-c/`
+
+---
+
+### Inbox File Overwrites Existing
+
+**Symptom:** Custom content replaced when running generator.
+
+**Cause:** Inbox processing copies files, overwriting existing.
+
+**Solution:**
+- Use unique filenames in inbox
+- Or remove inbox files after processing
+
+---
+
+## Deployment Issues
+
+### Build Fails on Render/Vercel
+
+**Common Causes:**
+
+1. **Node.js version:**
+   ```json
+   // package.json
+   {
+     "engines": {
+       "node": ">=18.0.0"
+     }
+   }
+   ```
+
+2. **Missing files:**
+   - Ensure `docs/` and `static/code-pages/` are committed
+   - Run generators before pushing
+
+3. **Path issues (Windows → Linux):**
+   - Backslashes cause YAML errors
+   - Ensure scripts normalize paths
+
+---
+
+### Large Repository Size
+
+**Symptom:** Push/clone takes very long.
+
+**Cause:** Generated HTML files can be large (478 files × ~15KB each).
+
+**Solutions:**
+1. Add generated files to `.gitignore` and generate on deploy
+2. Or accept the size trade-off for simpler deployment
+
+---
+
+## Performance Issues
+
+### Slow Generation
+
+**Symptom:** Script takes >30 seconds.
+
+**Causes:**
+- Very large source files
+- Many files (normal for 478 files)
+- Slow disk I/O
+
+**Expected Times:**
+- 478 files: ~5-10 seconds
+- First run may be slower (creating directories)
+
+---
+
+### Slow Page Load
+
+**Symptom:** Monaco Editor pages load slowly.
+
+**Causes:**
+1. **First load:** Monaco CDN files (~2.5MB) must download
+2. **Large files:** Source files >500KB may be slow
+3. **Network:** Slow CDN access
+
+**Solutions:**
+- Files are cached after first load
+- Consider self-hosting Monaco for faster loads
+
+---
+
+## Getting Help
+
+### Debug Mode
+
+Add console logs to scripts for debugging:
+
+```javascript
+console.log('Processing:', file.fullPath);
+console.log('Category:', file.category);
+console.log('Slug:', file.slug);
+```
+
+### Check Generated Files
+
+Inspect the output directly:
+
+```bash
+# Check MDX content
+cat docs/lib/alt_functions-c/index.mdx
+
+# Check HTML content
+cat static/code-pages/lib/alt_functions.c.html
+```
+
+### Report Issues
+
+If you encounter a bug:
+1. Check this troubleshooting guide
+2. Search existing issues on GitHub
+3. Create a new issue with:
+   - Error message
+   - Steps to reproduce
+   - Node.js version
+   - Operating system
+
+---
+
+## Quick Reference
+
+| Issue | Solution |
+|-------|----------|
+| YAML escape error | Update scripts to normalize paths |
+| Broken links warning | Safe to ignore, or set `onBrokenLinks: 'ignore'` |
+| No files generated | Check source directory and file extensions |
+| Monaco not loading | Check browser console for CDN errors |
+| Inbox not matching | Verify filename matches folder slug |
+| Build fails on deploy | Check Node.js version and path separators |

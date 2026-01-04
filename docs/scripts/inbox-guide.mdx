@@ -1,0 +1,284 @@
+---
+sidebar_label: "Inbox Workflow"
+sidebar_position: 4
+title: "Inbox Workflow Guide"
+description: "How to add supplementary documentation using the Inbox system"
+---
+
+# Inbox Workflow Guide
+
+The Inbox system allows you to add supplementary documentation (notes, examples, explanations) to any source code file without modifying the generator scripts.
+
+## Overview
+
+```
+┌─────────────────┐     ┌──────────────────┐     ┌────────────────────┐
+│     Inbox/      │────▶│ generate-docs.js │────▶│ docs/{category}/   │
+│  alt_functions  │     │   (matching)     │     │   {slug}/          │
+│      .md        │     │                  │     │   alt_functions.md │
+└─────────────────┘     └──────────────────┘     └────────────────────┘
+```
+
+## Quick Start
+
+### Step 1: Create Your Documentation
+
+Create a Markdown file in the `Inbox/` folder:
+
+```markdown
+<!-- Inbox/alt_functions.md -->
+
+# Notes on alt_functions.c
+
+## Purpose
+This file provides alternative implementations of standard library functions.
+
+## Key Functions
+- `strerror()` - Thread-safe error string retrieval
+- `atexit()` alternative implementations
+
+## Usage Example
+\`\`\`c
+#include "alt_functions.h"
+
+int main() {
+    // Example usage
+}
+\`\`\`
+```
+
+### Step 2: Run the Generator
+
+```bash
+node scripts/generate-docs.js
+```
+
+### Step 3: View Results
+
+Your file is now at:
+```
+docs/lib/alt_functions-c/alt_functions.md
+```
+
+## File Naming Convention
+
+The inbox file name determines which doc folder it routes to:
+
+| Inbox File | Matches | Destination |
+|------------|---------|-------------|
+| `alt_functions.md` | `alt_functions-c`, `alt_functions-h` | First match |
+| `ouch.md` | `ouch-c` | `docs/signals/ouch-c/` |
+| `fork.md` | `t_fork-c`, `fork_*` variants | First match |
+
+### Matching Algorithm
+
+```javascript
+// For inbox file "alt_functions.md":
+const baseName = 'alt_functions';  // Extracted from filename
+
+// Matches folders where slug:
+//   - equals baseName exactly, OR
+//   - starts with baseName + '-'
+
+// Examples of matches:
+'alt_functions-c'  // ✓ matches (starts with 'alt_functions-')
+'alt_functions-h'  // ✓ matches (starts with 'alt_functions-')
+'alt_function-c'   // ✗ no match (missing 's')
+```
+
+## Supported File Types
+
+| Extension | Description |
+|-----------|-------------|
+| `.md` | Markdown files |
+| `.mdx` | MDX files (Markdown + JSX) |
+
+## Persistence Behavior
+
+### Files Are Copied, Not Moved
+
+```
+Before:
+  Inbox/notes.md              ← Original stays here
+  docs/lib/alt_functions-c/   ← Folder exists
+
+After:
+  Inbox/notes.md              ← Still here
+  docs/lib/alt_functions-c/
+    ├── index.mdx             ← Auto-generated
+    └── notes.md              ← Copy added here
+```
+
+### Files Persist After Inbox Cleanup
+
+```
+Step 1: Drop file
+  Inbox/notes.md → docs/lib/alt_functions-c/notes.md
+
+Step 2: Clear inbox
+  rm Inbox/notes.md
+
+Step 3: File still exists
+  docs/lib/alt_functions-c/notes.md  ← Still here!
+```
+
+## Multiple Files Per Folder
+
+You can add multiple documentation files to a single code folder:
+
+```
+docs/lib/alt_functions-c/
+├── index.mdx           # Auto-generated (code viewer)
+├── notes.md            # From inbox
+├── examples.md         # From inbox
+├── api-reference.md    # From inbox
+└── changelog.md        # From inbox
+```
+
+### Workflow for Multiple Files
+
+```bash
+# Add multiple files to inbox
+echo "# Notes" > Inbox/alt_functions.md
+echo "# Examples" > Inbox/alt_functions_examples.md
+
+# Run generator - note: only exact matches work
+node scripts/generate-docs.js
+# Result: Only alt_functions.md matches, alt_functions_examples.md skipped
+```
+
+**Better approach:** Name files to match exactly:
+```bash
+# These all match alt_functions-c folder:
+Inbox/alt_functions.md       # ✓ matches
+Inbox/alt_functions.mdx      # ✓ matches
+```
+
+## Console Output
+
+When processing inbox files, you'll see:
+
+```
+Processing 3 inbox file(s)...
+  Copied: alt_functions.md -> lib/alt_functions-c/
+  Copied: ouch.md -> signals/ouch-c/
+  Skipped: unknown.md (no matching folder found)
+```
+
+## Best Practices
+
+### 1. Use Descriptive Content
+
+```markdown
+<!-- Good: Explains the purpose and usage -->
+# Understanding alt_functions.c
+
+This library provides thread-safe alternatives to standard C library
+functions that are known to have thread-safety issues.
+
+## Functions Provided
+...
+```
+
+### 2. Include Code Examples
+
+```markdown
+## Example: Using strerror_r()
+
+\`\`\`c
+char buf[256];
+int err = strerror_r(errno, buf, sizeof(buf));
+if (err == 0) {
+    printf("Error: %s\n", buf);
+}
+\`\`\`
+```
+
+### 3. Reference Related Files
+
+```markdown
+## Related Files
+
+- [error_functions.c](../error_functions-c/) - Error handling utilities
+- [tlpi_hdr.h](../tlpi_hdr-h/) - Common header definitions
+```
+
+### 4. Add Frontmatter for Better SEO
+
+```markdown
+---
+title: "Notes on alt_functions.c"
+description: "Thread-safe alternatives to standard C library functions"
+keywords: [strerror, thread-safe, TLPI]
+---
+
+# Notes on alt_functions.c
+...
+```
+
+## Troubleshooting
+
+### File Not Matched
+
+**Symptom:** `Skipped: myfile.md (no matching folder found)`
+
+**Causes:**
+1. No source file with matching name exists
+2. Typo in inbox filename
+3. Case sensitivity issue
+
+**Solution:**
+Check the exact slug name in `docs/`:
+```bash
+ls docs/lib/ | grep -i "alt"
+# alt_functions-c/
+# alt_functions-h/
+```
+
+### File Overwritten on Re-run
+
+**Note:** The inbox processing copies files. If you run the generator again with the same inbox file, it will overwrite the destination.
+
+**Recommendation:** Clear inbox after processing or use unique filenames.
+
+### Wrong Folder Selected
+
+If multiple folders match (e.g., both `alt_functions-c` and `alt_functions-h`), the first match wins.
+
+**Solution:** Be more specific in naming:
+```
+alt_functions_c_notes.md     # Won't match (no exact match)
+alt_functions.md             # Matches first folder found
+```
+
+## Advanced: Programmatic Inbox Processing
+
+You can create files programmatically and then run the generator:
+
+```bash
+#!/bin/bash
+# create-notes.sh
+
+# Generate documentation for all .c files
+for file in tlpi-dist/lib/*.c; do
+    basename=$(basename "$file" .c)
+    cat > "Inbox/${basename}.md" << EOF
+# ${basename}.c
+
+## Overview
+Auto-generated documentation stub.
+
+## TODO
+- Add description
+- Add examples
+EOF
+done
+
+# Process inbox
+node scripts/generate-docs.js
+```
+
+## Related
+
+- [generate-docs.js](./generate-docs) - Full script documentation
+- [Troubleshooting](./troubleshooting) - Common issues and solutions

@@ -1,0 +1,142 @@
+---
+sidebar_label: "Overview"
+sidebar_position: 1
+title: "Scripts Documentation"
+description: "Complete documentation for TLPI Docusaurus build scripts"
+---
+
+# Scripts Documentation
+
+This documentation covers the build scripts that power the TLPI Docusaurus site. These scripts automatically generate documentation pages and Monaco Editor viewers from source code files.
+
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           TLPI Docusaurus Site                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   ┌─────────────┐     ┌──────────────────┐     ┌──────────────────┐   │
+│   │  tlpi-dist/ │────▶│ generate-docs.js │────▶│     docs/        │   │
+│   │  (source)   │     │                  │     │  (MDX files)     │   │
+│   └─────────────┘     └──────────────────┘     └──────────────────┘   │
+│          │                                                              │
+│          │            ┌──────────────────┐     ┌──────────────────┐   │
+│          └───────────▶│generate-tlpi-html│────▶│ static/code-pages│   │
+│                       │       .js        │     │  (HTML viewers)  │   │
+│                       └──────────────────┘     └──────────────────┘   │
+│                                                                         │
+│   ┌─────────────┐     ┌──────────────────┐                             │
+│   │   Inbox/    │────▶│ generate-docs.js │──── (routes to matching     │
+│   │  (.md files)│     │  (inbox feature) │      doc folders)           │
+│   └─────────────┘     └──────────────────┘                             │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+## Available Scripts
+
+| Script | Purpose | Command |
+|--------|---------|---------|
+| `generate-tlpi-html.js` | Generates Monaco Editor HTML pages | `npm run generate-html` |
+| `generate-docs.js` | Generates MDX documentation + processes inbox | `node scripts/generate-docs.js` |
+
+## Quick Start
+
+### Generate Everything
+
+```bash
+# Step 1: Generate Monaco Editor HTML pages
+npm run generate-html
+
+# Step 2: Generate MDX documentation pages
+node scripts/generate-docs.js
+
+# Step 3: Start development server
+npm start
+```
+
+### Add New Source Files
+
+1. Place `.c`, `.h`, or `.sh` files in appropriate `tlpi-dist/` subfolder
+2. Run both generation scripts
+3. Files will appear in sidebar and code browser
+
+### Add Notes to Existing Files
+
+1. Create a `.md` file with matching name in `Inbox/` folder
+2. Run `node scripts/generate-docs.js`
+3. The file is copied to the matching doc folder
+
+## Directory Structure
+
+```
+project/
+├── tlpi-dist/                  # Source code files
+│   ├── lib/                    # Library utilities
+│   ├── signals/                # Signal handling examples
+│   ├── sockets/                # Socket programming
+│   └── ...                     # Other categories
+│
+├── docs/                       # Generated MDX documentation
+│   ├── lib/
+│   │   └── alt_functions-c/
+│   │       ├── index.mdx       # Auto-generated code viewer
+│   │       └── notes.md        # Optional: your added notes
+│   └── scripts/                # This documentation
+│
+├── static/code-pages/          # Generated Monaco HTML pages
+│   ├── lib/
+│   │   └── alt_functions.c.html
+│   └── index.html              # Category index
+│
+├── Inbox/                      # Drop .md files here for routing
+│
+└── scripts/                    # Build scripts
+    ├── generate-docs.js
+    └── generate-tlpi-html.js
+```
+
+## Supported File Types
+
+| Extension | Language | Description |
+|-----------|----------|-------------|
+| `.c` | C | C source files |
+| `.h` | C | C header files |
+| `.sh` | Bash | Shell scripts |
+
+## Key Features
+
+### 1. Folder-Per-File Structure
+
+Each source file gets its own folder, allowing you to add supplementary documentation:
+
+```
+docs/lib/alt_functions-c/
+├── index.mdx           # Generated: Monaco viewer embed
+├── notes.md            # Optional: Your notes
+├── examples.md         # Optional: Usage examples
+└── related.md          # Optional: Related resources
+```
+
+### 2. Inbox System
+
+Drop `.md` files in `Inbox/` and they're automatically routed to matching folders:
+
+- `Inbox/alt_functions.md` → `docs/lib/alt_functions-c/alt_functions.md`
+- Files persist in docs even after inbox is cleared
+
+### 3. Monaco Editor Integration
+
+Every source file is viewable in a rich Monaco Editor with:
+- Syntax highlighting
+- Line numbers
+- Dark/light theme support
+- Read-only mode
+
+## Next Steps
+
+- [generate-docs.js Documentation](./generate-docs) - Full details on MDX generation
+- [generate-tlpi-html.js Documentation](./generate-tlpi-html) - Monaco HTML generation
+- [Inbox Workflow Guide](./inbox-guide) - How to use the inbox feature
+- [Troubleshooting](./troubleshooting) - Common issues and solutions

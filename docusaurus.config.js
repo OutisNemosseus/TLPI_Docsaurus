@@ -57,6 +57,11 @@ const config = {
             position: 'left',
           },
           {
+            to: '/docs/scripts/',
+            label: 'Scripts Guide',
+            position: 'left',
+          },
+          {
             href: 'https://github.com/OutisNemosseus/TLPI_Docsaurus',
             label: 'GitHub',
             position: 'right',

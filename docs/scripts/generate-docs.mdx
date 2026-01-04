@@ -1,0 +1,323 @@
+---
+sidebar_label: "generate-docs.js"
+sidebar_position: 2
+title: "generate-docs.js - MDX Documentation Generator"
+description: "Detailed documentation for the MDX documentation generator script"
+---
+
+# generate-docs.js
+
+The `generate-docs.js` script is the primary documentation generator for the TLPI Docusaurus site. It scans source code files and generates MDX documentation pages with embedded Monaco Editor iframes.
+
+## Usage
+
+```bash
+node scripts/generate-docs.js
+```
+
+## What It Does
+
+1. **Scans `tlpi-dist/`** for `.c`, `.h`, and `.sh` files
+2. **Creates folder structure** in `docs/` for each file
+3. **Generates `index.mdx`** files with Monaco Editor embeds
+4. **Processes inbox** files and routes them to matching folders
+5. **Generates `sidebars.js`** with all categories and files
+
+## Configuration
+
+### Constants
+
+```javascript
+const TLPI_DIR = path.join(__dirname, '..', 'tlpi-dist');  // Source directory
+const DOCS_DIR = path.join(__dirname, '..', 'docs');       // Output directory
+const INBOX_DIR = path.join(__dirname, '..', 'Inbox');     // Inbox for .md files
+```
+
+### Supported File Types
+
+```javascript
+const FILE_TYPES = {
+  '.c': { label: 'C Source', lang: 'c' },
+  '.h': { label: 'C Header', lang: 'c' },
+  '.sh': { label: 'Shell Script', lang: 'bash' },
+};
+```
+
+## Output Structure
+
+### Before (Source)
+
+```
+tlpi-dist/
+├── lib/
+│   ├── alt_functions.c
+│   └── alt_functions.h
+└── signals/
+    └── ouch.c
+```
+
+### After (Generated)
+
+```
+docs/
+├── lib/
+│   ├── alt_functions-c/
+│   │   └── index.mdx
+│   └── alt_functions-h/
+│   │   └── index.mdx
+└── signals/
+    └── ouch-c/
+        └── index.mdx
+```
+
+## Generated MDX Format
+
+Each `index.mdx` file contains:
+
+```mdx
+---
+sidebar_label: "alt_functions.c"
+title: "alt_functions.c"
+description: "C Source from lib"
+---
+
+# alt_functions.c
+
+**Category:** `lib` | **Type:** C Source
+
+<iframe
+  src="/code-pages/lib/alt_functions.c.html"
+  width="100%"
+  height="700px"
+  style={{border: '1px solid #333', borderRadius: '8px'}}
+  title="alt_functions.c - Monaco Editor"
+/>
+```
+
+## Core Functions
+
+### `findFiles(dir, baseDir)`
+
+Recursively scans a directory for supported source files.
+
+**Parameters:**
+- `dir` (string) - Directory to scan
+- `baseDir` (string) - Base directory for relative path calculation
+
+**Returns:** Array of file objects:
+```javascript
+{
+  fullPath: '/path/to/file.c',
+  filename: 'file.c',
+  ext: '.c',
+  category: 'lib',           // Relative path from tlpi-dist
+  slug: 'file-c'             // URL-safe identifier
+}
+```
+
+**Example:**
+```javascript
+const files = findFiles('./tlpi-dist');
+// Returns: [
+//   { fullPath: '...', filename: 'alt_functions.c', category: 'lib', slug: 'alt_functions-c' },
+//   ...
+// ]
+```
+
+### `generateMdx(filename, category, config, slug)`
+
+Generates MDX content for a source file.
+
+**Parameters:**
+- `filename` (string) - Source file name (e.g., 'alt_functions.c')
+- `category` (string) - Category/folder path (e.g., 'lib')
+- `config` (object) - File type configuration
+- `slug` (string) - URL-safe identifier
+
+**Returns:** MDX content string
+
+### `generateSidebars(files)`
+
+Generates the complete `sidebars.js` content.
+
+**Parameters:**
+- `files` (array) - Array of file objects from `findFiles()`
+
+**Returns:** JavaScript module content string for sidebars.js
+
+**Generated Structure:**
+```javascript
+{
+  tutorialSidebar: [
+    'intro',
+    {
+      type: 'category',
+      label: 'Source Code',
+      collapsed: false,
+      items: [
+        {
+          type: 'category',
+          label: 'Lib',
+          items: ['lib/alt_functions-c/index', ...]
+        },
+        // ... more categories
+      ]
+    }
+  ]
+}
+```
+
+### `processInbox()`
+
+Processes `.md` and `.mdx` files from the Inbox folder.
+
+**Matching Logic:**
+1. Extract base name from inbox file (e.g., `alt_functions.md` → `alt_functions`)
+2. Find matching doc folder (e.g., `alt_functions-c`, `alt_functions-h`)
+3. Copy file to matching folder
+
+**Example:**
+```
+Inbox/alt_functions.md  →  docs/lib/alt_functions-c/alt_functions.md
+Inbox/ouch.md           →  docs/signals/ouch-c/ouch.md
+```
+
+## Slug Generation
+
+File names are converted to URL-safe slugs:
+
+| Filename | Slug |
+|----------|------|
+| `alt_functions.c` | `alt_functions-c` |
+| `Build_ename.sh` | `build_ename-sh` |
+| `t_fork.c` | `t_fork-c` |
+
+**Rules:**
+- Dots (`.`) → hyphens (`-`)
+- Converted to lowercase
+- Preserves underscores
+
+## Category Handling
+
+Categories are derived from the relative folder path:
+
+| Source Path | Category |
+|-------------|----------|
+| `tlpi-dist/lib/file.c` | `lib` |
+| `tlpi-dist/signals/file.c` | `signals` |
+| `tlpi-dist/shlibs/demo_Bsymbolic/file.c` | `shlibs/demo_Bsymbolic` |
+
+### Path Normalization
+
+Windows backslashes are automatically converted to forward slashes:
+
+```javascript
+category: (relDir || 'lib').replace(/\\/g, '/')
+```
+
+## Error Handling
+
+The script handles common errors gracefully:
+
+```javascript
+try {
+  // File processing
+} catch (err) {
+  console.error('Error:', file.filename, '-', err.message);
+}
+```
+
+Errors are logged but don't stop the entire process.
+
+## Preservation Behavior
+
+### What Gets Regenerated
+- `index.mdx` files are always regenerated
+- `sidebars.js` is always regenerated
+
+### What Gets Preserved
+- Additional `.md` files in doc folders
+- Custom content added to folders
+
+**Example:**
+```
+docs/lib/alt_functions-c/
+├── index.mdx       # Regenerated every run
+├── notes.md        # PRESERVED - your custom file
+└── examples.md     # PRESERVED - your custom file
+```
+
+## Console Output
+
+```
+TLPI Docs Generator v2.0
+========================
+
+Scanning C:\...\tlpi-dist ...
+Found 478 source files
+
+Generated: lib/alt_functions-c/index.mdx
+Generated: lib/alt_functions-h/index.mdx
+...
+
+Processing 2 inbox file(s)...
+  Copied: alt_functions.md -> lib/alt_functions-c/
+  Skipped: unknown.md (no matching folder found)
+
+Generating sidebars.js...
+
+========================
+Generated: 478 documentation folders
+Inbox processed: 1 file(s)
+Output: C:\...\docs
+```
+
+## Extending the Script
+
+### Adding New File Types
+
+```javascript
+const FILE_TYPES = {
+  '.c': { label: 'C Source', lang: 'c' },
+  '.h': { label: 'C Header', lang: 'c' },
+  '.sh': { label: 'Shell Script', lang: 'bash' },
+  // Add new types:
+  '.py': { label: 'Python Script', lang: 'python' },
+  '.js': { label: 'JavaScript', lang: 'javascript' },
+};
+```
+
+### Customizing MDX Template
+
+Modify the `generateMdx()` function to change the output format:
+
+```javascript
+function generateMdx(filename, category, config, slug) {
+  return `---
+sidebar_label: "${filename}"
+title: "${filename}"
+description: "${config.label} from ${category}"
+---
+
+# ${filename}
+
+**Category:** \`${category}\` | **Type:** ${config.label}
+
+<!-- Add custom sections here -->
+
+<iframe
+  src="/code-pages/${category}/${filename}.html"
+  width="100%"
+  height="700px"
+  style={{border: '1px solid #333', borderRadius: '8px'}}
+  title="${filename} - Monaco Editor"
+/>
+`;
+}
+```
+
+## Related
+
+- [generate-tlpi-html.js](./generate-tlpi-html) - Generates the Monaco HTML pages
+- [Inbox Guide](./inbox-guide) - How to use the inbox feature
+- [Troubleshooting](./troubleshooting) - Common issues

@@ -1,0 +1,381 @@
+---
+sidebar_label: "generate-tlpi-html.js"
+sidebar_position: 3
+title: "generate-tlpi-html.js - Monaco Editor Generator"
+description: "Detailed documentation for the Monaco Editor HTML page generator"
+---
+
+# generate-tlpi-html.js
+
+The `generate-tlpi-html.js` script generates standalone HTML pages featuring the Monaco Editor for each source code file. These pages are embedded in the MDX documentation via iframes.
+
+## Usage
+
+```bash
+npm run generate-html
+# or
+node scripts/generate-tlpi-html.js
+```
+
+## What It Does
+
+1. **Scans `tlpi-dist/`** for `.c`, `.h`, and `.sh` files
+2. **Reads file contents** and escapes special characters
+3. **Generates HTML pages** with embedded Monaco Editor
+4. **Creates category index** page at `/code-pages/index.html`
+5. **Outputs to `static/code-pages/`** directory
+
+## Configuration
+
+### Constants
+
+```javascript
+const TLPI_DIR = path.join(__dirname, '..', 'tlpi-dist');
+const OUTPUT_DIR = path.join(__dirname, '..', 'static', 'code-pages');
+```
+
+### Supported File Types
+
+```javascript
+const FILE_TYPES = {
+  '.c': { label: 'C Source', lang: 'c' },
+  '.h': { label: 'C Header', lang: 'c' },
+  '.sh': { label: 'Shell Script', lang: 'shell' },  // Note: 'shell' for Monaco
+};
+```
+
+## Output Structure
+
+### Generated Files
+
+```
+static/code-pages/
+├── index.html              # Category listing page
+├── lib/
+│   ├── alt_functions.c.html
+│   ├── alt_functions.h.html
+│   └── ...
+├── signals/
+│   ├── ouch.c.html
+│   └── ...
+└── sockets/
+    └── ...
+```
+
+## Generated HTML Format
+
+Each HTML file is a complete standalone page:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>alt_functions.c - TLPI Source Code</title>
+  <style>
+    /* Dark theme styling */
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #1e1e1e;
+      overflow: hidden;
+    }
+    #container {
+      width: 100%;
+      height: 100vh;
+    }
+    .loading {
+      color: #d4d4d4;
+      font-family: 'Consolas', monospace;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div class="loading">Loading Monaco Editor...</div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+  <script>
+    require.config({
+      paths: {
+        vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs'
+      }
+    });
+
+    require(['vs/editor/editor.main'], function () {
+      const code = `/* File contents here, properly escaped */`;
+
+      monaco.editor.create(document.getElementById('container'), {
+        value: code,
+        language: 'c',
+        theme: 'vs-dark',
+        readOnly: true,
+        automaticLayout: true,
+        minimap: { enabled: true },
+        fontSize: 14,
+        lineNumbers: 'on',
+        scrollBeyondLastLine: false,
+        wordWrap: 'off',
+        folding: true,
+        renderLineHighlight: 'all',
+      });
+    });
+  </script>
+</body>
+</html>
+```
+
+## Core Functions
+
+### `escapeForJS(str)`
+
+Escapes special characters for safe embedding in JavaScript template literals.
+
+**Parameters:**
+- `str` (string) - Raw file content
+
+**Returns:** Escaped string safe for JS template literals
+
+**Escaping Rules:**
+```javascript
+function escapeForJS(str) {
+  return str
+    .replace(/\\/g, '\\\\')      // Backslashes
+    .replace(/`/g, '\\`')        // Backticks
+    .replace(/\$/g, '\\$')       // Dollar signs (template literals)
+    .replace(/\r\n/g, '\n')      // Normalize line endings
+    .replace(/\r/g, '\n');       // Handle old Mac line endings
+}
+```
+
+### `generateMonacoHTML(filename, code, lang)`
+
+Generates a complete HTML page with Monaco Editor.
+
+**Parameters:**
+- `filename` (string) - Name of the source file
+- `code` (string) - File contents (already escaped)
+- `lang` (string) - Monaco language identifier
+
+**Returns:** Complete HTML document string
+
+### `findFiles(dir, baseDir)`
+
+Recursively scans for source files (same as generate-docs.js).
+
+**Returns:** Array of file objects with:
+- `fullPath` - Absolute path to file
+- `filename` - File name
+- `ext` - File extension
+- `category` - Relative folder path
+
+### `generateIndex(files)`
+
+Generates the category index page.
+
+**Parameters:**
+- `files` (array) - All discovered files
+
+**Returns:** HTML content for index page
+
+## Monaco Editor Configuration
+
+### Editor Options
+
+```javascript
+{
+  value: code,                    // File content
+  language: 'c',                  // Syntax highlighting
+  theme: 'vs-dark',               // Dark theme
+  readOnly: true,                 // Prevent editing
+  automaticLayout: true,          // Responsive sizing
+  minimap: { enabled: true },     // Code minimap
+  fontSize: 14,                   // Font size in pixels
+  lineNumbers: 'on',              // Show line numbers
+  scrollBeyondLastLine: false,    // No extra scrolling
+  wordWrap: 'off',                // No word wrap
+  folding: true,                  // Code folding
+  renderLineHighlight: 'all',     // Highlight current line
+}
+```
+
+### Language Mapping
+
+| File Extension | Monaco Language |
+|----------------|-----------------|
+| `.c` | `c` |
+| `.h` | `c` |
+| `.sh` | `shell` |
+
+## Index Page
+
+The script generates a master index at `static/code-pages/index.html`:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>TLPI Source Code Browser</title>
+  <style>
+    /* Dark theme with category cards */
+  </style>
+</head>
+<body>
+  <h1>TLPI Source Code</h1>
+  <div class="categories">
+    <div class="category">
+      <h2>lib</h2>
+      <ul>
+        <li><a href="lib/alt_functions.c.html">alt_functions.c</a></li>
+        <li><a href="lib/alt_functions.h.html">alt_functions.h</a></li>
+        ...
+      </ul>
+    </div>
+    <!-- More categories -->
+  </div>
+</body>
+</html>
+```
+
+## CDN Dependencies
+
+The generated pages use Monaco Editor from cdnjs:
+
+```
+https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js
+```
+
+### Updating Monaco Version
+
+To update Monaco Editor version, modify the URL in `generateMonacoHTML()`:
+
+```javascript
+const MONACO_VERSION = '0.44.0';
+const MONACO_CDN = `https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/${MONACO_VERSION}/min/vs`;
+```
+
+## Console Output
+
+```
+TLPI HTML Generator
+===================
+
+Scanning C:\...\tlpi-dist ...
+Found 478 files
+
+Generated: lib/alt_functions.c.html
+Generated: lib/alt_functions.h.html
+Generated: lib/become_daemon.c.html
+...
+
+Generating index...
+
+===================
+Generated 478 HTML pages
+Output: C:\...\static\code-pages
+```
+
+## Error Handling
+
+### File Read Errors
+
+```javascript
+try {
+  const code = fs.readFileSync(file.fullPath, 'utf8');
+} catch (err) {
+  console.error('Error reading file:', file.filename, err.message);
+  continue;
+}
+```
+
+### Directory Creation
+
+```javascript
+if (!fs.existsSync(outDir)) {
+  fs.mkdirSync(outDir, { recursive: true });
+}
+```
+
+## Customization
+
+### Changing Theme
+
+Modify the `theme` option in Monaco configuration:
+
+```javascript
+// Available themes: 'vs', 'vs-dark', 'hc-black'
+theme: 'vs-dark',
+```
+
+### Adjusting Editor Size
+
+The container uses 100% viewport height:
+
+```css
+#container {
+  width: 100%;
+  height: 100vh;
+}
+```
+
+For fixed height:
+```css
+#container {
+  width: 100%;
+  height: 700px;
+}
+```
+
+### Adding Custom Features
+
+Add Monaco features in the editor initialization:
+
+```javascript
+monaco.editor.create(document.getElementById('container'), {
+  // ... existing options
+
+  // Additional features:
+  contextmenu: true,              // Right-click menu
+  quickSuggestions: false,        // Disable autocomplete
+  parameterHints: { enabled: false },
+  suggestOnTriggerCharacters: false,
+  acceptSuggestionOnEnter: 'off',
+  tabCompletion: 'off',
+  wordBasedSuggestions: false,
+});
+```
+
+## Performance Considerations
+
+### File Size
+
+- Large files (>1MB) may cause slow loading
+- Monaco handles most file sizes well
+- Consider lazy loading for very large codebases
+
+### CDN Caching
+
+Monaco Editor files are cached by the browser. First load requires:
+- ~2.5MB of JavaScript
+- Subsequent loads are much faster
+
+### Offline Support
+
+For offline use, download Monaco and serve locally:
+
+```javascript
+require.config({
+  paths: {
+    vs: '/static/monaco/vs'  // Local path
+  }
+});
+```
+
+## Related
+
+- [generate-docs.js](./generate-docs) - MDX documentation generator
+- [Inbox Guide](./inbox-guide) - Adding notes to code files
+- [Troubleshooting](./troubleshooting) - Common issues
