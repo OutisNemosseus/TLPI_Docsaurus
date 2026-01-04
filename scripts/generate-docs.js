@@ -2,6 +2,9 @@
 /**
  * Generate Docusaurus MDX documentation pages from TLPI source files
  * Uses iframe to embed Monaco Editor HTML pages
+ *
+ * Structure: docs/{category}/{slug}/index.mdx
+ * This allows adding more .md files to each folder later
  */
 
 const fs = require('fs');
@@ -9,6 +12,7 @@ const path = require('path');
 
 const TLPI_DIR = path.join(__dirname, '..', 'tlpi-dist');
 const DOCS_DIR = path.join(__dirname, '..', 'docs');
+const INBOX_DIR = path.join(__dirname, '..', 'Inbox');
 
 const FILE_TYPES = {
   '.c': { label: 'C Source', lang: 'c' },
@@ -16,8 +20,10 @@ const FILE_TYPES = {
   '.sh': { label: 'Shell Script', lang: 'bash' },
 };
 
-function generateMdx(filename, category, config) {
-  const title = filename.replace(/\.[^.]+$/, '');
+// Track all generated folders for inbox matching
+const generatedFolders = new Map(); // slug -> { category, fullPath }
+
+function generateMdx(filename, category, config, slug) {
   const iframeSrc = `/code-pages/${category}/${filename}.html`;
 
   return `---
@@ -55,12 +61,13 @@ function findFiles(dir, baseDir) {
         const ext = path.extname(item).toLowerCase();
         if (FILE_TYPES[ext]) {
           const relDir = path.relative(baseDir, dir);
+          const slug = item.replace(/\./g, '-').toLowerCase();
           files.push({
             fullPath,
             filename: item,
             ext,
             category: (relDir || 'lib').replace(/\\/g, '/'),
-            slug: item.replace(/\./g, '-').toLowerCase()
+            slug
           });
         }
       }
@@ -85,7 +92,7 @@ function generateSidebars(files) {
     return {
       type: 'category',
       label: cat.charAt(0).toUpperCase() + cat.slice(1).replace(/_/g, ' '),
-      items: catFiles.map(f => `${cat}/${f.slug}`)
+      items: catFiles.map(f => `${cat}/${f.slug}/index`)
     };
   });
 
@@ -106,58 +113,119 @@ module.exports = sidebars;
 `;
 }
 
+function processInbox() {
+  if (!fs.existsSync(INBOX_DIR)) {
+    console.log('No Inbox folder found, skipping inbox processing.');
+    return 0;
+  }
+
+  const inboxFiles = fs.readdirSync(INBOX_DIR).filter(f =>
+    f.endsWith('.md') || f.endsWith('.mdx')
+  );
+
+  if (inboxFiles.length === 0) {
+    console.log('Inbox is empty.');
+    return 0;
+  }
+
+  console.log(`\nProcessing ${inboxFiles.length} inbox file(s)...`);
+  let processed = 0;
+
+  for (const file of inboxFiles) {
+    // Extract the base name (e.g., "alt_functions" from "alt_functions.md")
+    const baseName = file.replace(/\.(md|mdx)$/, '').toLowerCase();
+
+    // Try to find a matching folder
+    // Match patterns: exact match, or with -c, -h, -sh suffix
+    let matchedFolder = null;
+
+    for (const [slug, info] of generatedFolders) {
+      // Check if the inbox file name matches the folder slug
+      // e.g., "alt_functions" matches "alt_functions-c"
+      if (slug === baseName || slug.startsWith(baseName + '-')) {
+        matchedFolder = info;
+        break;
+      }
+    }
+
+    if (matchedFolder) {
+      const srcPath = path.join(INBOX_DIR, file);
+      const destPath = path.join(matchedFolder.fullPath, file);
+
+      // Copy file to the matching folder
+      fs.copyFileSync(srcPath, destPath);
+      console.log(`  Copied: ${file} -> ${matchedFolder.category}/${path.basename(matchedFolder.fullPath)}/`);
+      processed++;
+    } else {
+      console.log(`  Skipped: ${file} (no matching folder found)`);
+    }
+  }
+
+  return processed;
+}
+
 function main() {
-  console.log('TLPI Docs Generator');
-  console.log('===================\n');
+  console.log('TLPI Docs Generator v2.0');
+  console.log('========================\n');
 
   if (!fs.existsSync(TLPI_DIR)) {
     console.error('Error: tlpi-dist not found at', TLPI_DIR);
     process.exit(1);
   }
 
-  // Clean docs directory (except intro.md)
-  if (fs.existsSync(DOCS_DIR)) {
-    const items = fs.readdirSync(DOCS_DIR);
-    for (const item of items) {
-      if (item !== 'intro.md') {
-        const itemPath = path.join(DOCS_DIR, item);
-        fs.rmSync(itemPath, { recursive: true, force: true });
-      }
-    }
-  } else {
+  // Create docs directory if needed (but don't clean - preserve existing files)
+  if (!fs.existsSync(DOCS_DIR)) {
     fs.mkdirSync(DOCS_DIR, { recursive: true });
   }
 
   console.log('Scanning', TLPI_DIR, '...');
   const files = findFiles(TLPI_DIR);
-  console.log('Found', files.length, 'files\n');
+  console.log('Found', files.length, 'source files\n');
 
   let generated = 0;
+  let skipped = 0;
+
   for (const file of files) {
     try {
       const config = FILE_TYPES[file.ext];
-      const mdx = generateMdx(file.filename, file.category, config);
 
-      const outDir = path.join(DOCS_DIR, file.category);
-      if (!fs.existsSync(outDir)) {
-        fs.mkdirSync(outDir, { recursive: true });
+      // Create folder for this file: docs/{category}/{slug}/
+      const folderPath = path.join(DOCS_DIR, file.category, file.slug);
+      const indexPath = path.join(folderPath, 'index.mdx');
+
+      // Track this folder for inbox matching
+      generatedFolders.set(file.slug, {
+        category: file.category,
+        fullPath: folderPath
+      });
+
+      // Only create/overwrite index.mdx if folder doesn't exist
+      // This preserves any additional .md files added to the folder
+      if (!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath, { recursive: true });
       }
 
-      fs.writeFileSync(path.join(outDir, file.slug + '.mdx'), mdx);
+      // Always regenerate the index.mdx (source code view)
+      const mdx = generateMdx(file.filename, file.category, config, file.slug);
+      fs.writeFileSync(indexPath, mdx);
       generated++;
-      console.log('Generated:', file.category + '/' + file.slug + '.mdx');
+      console.log('Generated:', file.category + '/' + file.slug + '/index.mdx');
     } catch (err) {
       console.error('Error:', file.filename, '-', err.message);
     }
   }
+
+  // Process inbox files
+  const inboxProcessed = processInbox();
 
   // Generate sidebars.js
   console.log('\nGenerating sidebars.js...');
   const sidebarsContent = generateSidebars(files);
   fs.writeFileSync(path.join(__dirname, '..', 'sidebars.js'), sidebarsContent);
 
-  console.log('\n===================');
-  console.log('Generated', generated, 'MDX documentation pages with Monaco iframe embeds');
+  console.log('\n========================');
+  console.log(`Generated: ${generated} documentation folders`);
+  console.log(`Inbox processed: ${inboxProcessed} file(s)`);
   console.log('Output:', DOCS_DIR);
 }
 
